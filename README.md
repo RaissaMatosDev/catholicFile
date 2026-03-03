@@ -47,12 +47,18 @@ O projeto segue boas práticas de backend:
 
 ```text
 src/main/java/com/catholicFile/catholicFile
+├── Configurations
 ├── controller
-├── services
-├── repositories
-├── entities
 ├── DTOs
-└── enums
+├── entities
+├── enums
+├── infra
+├── repositories
+├── services
+├── usuarios
+
+
+
 ```
 
 ---
