@@ -6,11 +6,14 @@ import com.catholicFile.catholicFile.services.UsuarioService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
+
 
 @RestController
 @RequestMapping ("/usuarios")
@@ -31,20 +34,22 @@ public class UsuarioController {
         var usuarioSalvo = usuarioService.cadastrar(dados);
 
         return ResponseEntity
-                .created(URI.create("/usuarios" + usuarioSalvo."/id()"))
+                .created(URI.create("/usuarios/" + usuarioSalvo.id()))
                 .body(usuarioSalvo);
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>>listar(){
-        var usuarios = usuarioService.listar();
-        return ResponseEntity.ok(usuarios);
+    public ResponseEntity<Page<UsuarioDTO>> listar(
+            @PageableDefault(size = 10, sort = "nome") Pageable pageable){
+
+        var page = usuarioService.listar(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioAttDTO dados) {
-        var usuarioAtualizado = usuarioService.atualizar(id, dados);
+        var usuarioAtualizado = usuarioService.atualizar(dados);
 
         return ResponseEntity.ok(usuarioAtualizado);
     }

@@ -8,15 +8,18 @@ import jakarta.validation.constraints.NotNull;
 
 public record UsuarioAttDTO(
 
-                            @NotNull @Email
+                            @NotBlank
+                            String nome,
+
+                            Long id,
+
+                            @NotNull(message = "Email inválido!")
+                            @Email(message = "Email é inválido!")
                             String email,
 
                             @NotBlank @Valid
                             String senha,
 
                             UserRole USUARIO)
-{
 
-    public void atualizarUsuario(Long usuarios) {
-    }
-}
+{}

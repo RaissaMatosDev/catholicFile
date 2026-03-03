@@ -7,6 +7,7 @@ import lombok.*;
 //Esta entidade é registrada no banco na tabela secao folhetos,
 // e utiliza relacionamento ManytoOne em relação a folheto
 // (um folheto contem varias secoes folheto).
+
 @Getter
 @Setter
 @NoArgsConstructor

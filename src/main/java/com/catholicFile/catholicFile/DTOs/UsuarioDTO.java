@@ -17,7 +17,7 @@ public record UsuarioDTO(
                          @NotNull @Email
                          String email,
 
-                         @NotBlank @Valid
+                         @NotBlank
                          String senha,
 
                          UserRole role

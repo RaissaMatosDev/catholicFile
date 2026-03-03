@@ -1,5 +1,6 @@
 package com.catholicFile.catholicFile.entities;
 
+import com.catholicFile.catholicFile.DTOs.UsuarioAttDTO;
 import com.catholicFile.catholicFile.DTOs.UsuarioDTO;
 import com.catholicFile.catholicFile.enums.UserRole;
 import jakarta.persistence.*;
@@ -10,14 +11,21 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table (name = "usuarios")
 
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String nome;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String senha;
 
     @Enumerated(EnumType.STRING)
@@ -28,4 +36,13 @@ public class Usuario {
         this.email = dto.email();
         this.senha = dto.senha();
     }
+    public void atualizarInformacoes(UsuarioAttDTO dto) {
+        if (dto.nome() != null) {
+            this.nome = dto.nome();
+        }
+        if (dto.email() != null) {
+            this.email = dto.email();
+        }
+    }
+
 }
