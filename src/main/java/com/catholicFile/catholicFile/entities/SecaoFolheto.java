@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "secao_folhetos")
+@Table(name = "secao_folheto")
 public class SecaoFolheto {
 
     @Id

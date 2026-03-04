@@ -16,7 +16,7 @@ public class TratadorDeErros {
         ErroResposta erro = new ErroResposta(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
-                "Email já cadastrado"
+                "Conflito entre tratamento de dados (ERRO 409)"
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);

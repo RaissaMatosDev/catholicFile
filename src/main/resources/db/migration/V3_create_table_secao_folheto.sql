@@ -6,3 +6,4 @@ CREATE TABLE secao_folheto (
     tipo VARCHAR(50),
     folheto_id BIGINT,
     CONSTRAINT fk_secao_folheto_id FOREIGN KEY (folheto_id) REFERENCES folhetos(id)
+    );

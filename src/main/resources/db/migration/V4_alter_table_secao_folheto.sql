@@ -1,0 +1,1 @@
+ALTER TABLE secao_folheto ALTER COLUMN conteudo TYPE TEXT;

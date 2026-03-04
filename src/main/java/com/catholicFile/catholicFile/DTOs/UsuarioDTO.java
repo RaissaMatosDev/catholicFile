@@ -2,7 +2,6 @@ package com.catholicFile.catholicFile.DTOs;
 
 import com.catholicFile.catholicFile.entities.Usuario;
 import com.catholicFile.catholicFile.enums.UserRole;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
