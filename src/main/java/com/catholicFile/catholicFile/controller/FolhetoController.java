@@ -2,6 +2,7 @@ package com.catholicFile.catholicFile.controller;
 
 
 import com.catholicFile.catholicFile.DTOs.FolhetoDTO;
+import com.catholicFile.catholicFile.infra.RegraNegocioException;
 import com.catholicFile.catholicFile.services.FolhetoService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,7 +25,7 @@ public class FolhetoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<FolhetoDTO> cadastrarFolheto(@RequestBody @Valid FolhetoDTO dados) {
+    public ResponseEntity<FolhetoDTO> cadastrarFolheto(@RequestBody @Valid FolhetoDTO dados) throws RegraNegocioException {
         var folhetoSalvo = folhetoService.cadastrarFolheto(dados);
 
         return ResponseEntity

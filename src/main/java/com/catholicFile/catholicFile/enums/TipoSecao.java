@@ -4,9 +4,11 @@ public enum TipoSecao {
     ENTRADA,
     ATO_PENITENCIAL,
     GLORIA,
-    ACLAMAÇÃO,
+    ACLAMACAO,
     OFERTORIO,
     COMUNHAO,
+    POS_COMUNHAO,
+    FINAL,
     SALMO,
-    PERSONALIZADA
+    PROCISSAO_DAS_CINZAS
 }

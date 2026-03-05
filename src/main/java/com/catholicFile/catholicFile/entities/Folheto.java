@@ -9,31 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
+@Entity
+@Table(name = "folheto")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "folhetos")
-
 public class Folheto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private TipoSecao tipoSecao;
-
-    @Column(columnDefinition = "TEXT")
-    private String conteudo;
-
+    private String titulo;
 
     @OneToMany(mappedBy = "folheto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SecaoFolheto> secoes = new ArrayList<>();
-
-    public Folheto(FolhetoDTO dto) {
-        this.tipoSecao = dto.tipoSecao();
-        this.conteudo = dto.conteudo();
-    }
-    }
-
+}
 

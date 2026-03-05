@@ -1,25 +1,24 @@
 package com.catholicFile.catholicFile.DTOs;
 
 import com.catholicFile.catholicFile.entities.Folheto;
-import com.catholicFile.catholicFile.enums.TipoSecao;
-import jakarta.validation.constraints.NotNull;
+import com.catholicFile.catholicFile.entities.SecaoFolheto;
+
+import java.util.List;
 
 public record FolhetoDTO(
-                        Long id,
-
-                        @NotNull
-                        TipoSecao tipoSecao,
-
-                        @NotNull
-                        String conteudo) {
+        Long id,
+        String titulo,
+        List<Long> secoesIds
+) {
 
     public FolhetoDTO(Folheto folheto) {
-        this (
+        this(
                 folheto.getId(),
-                folheto.getTipoSecao(),
-                folheto.getConteudo()
+                folheto.getTitulo(),
+                folheto.getSecoes()
+                        .stream()
+                        .map(SecaoFolheto::getId)
+                        .toList()
         );
-
-
     }
 }
