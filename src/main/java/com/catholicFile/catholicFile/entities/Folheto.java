@@ -25,5 +25,10 @@ public class Folheto {
 
     @OneToMany(mappedBy = "folheto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SecaoFolheto> secoes = new ArrayList<>();
+
+    public void adicionarSecao(SecaoFolheto secao){
+        secao.setFolheto(this);
+        this.secoes.add(secao);
+    }
 }
 

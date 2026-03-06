@@ -1,6 +1,7 @@
 package com.catholicFile.catholicFile.entities;
 
 
+import com.catholicFile.catholicFile.DTOs.SecaoFolhetoDTO;
 import com.catholicFile.catholicFile.enums.TipoSecao;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,4 +35,9 @@ public class SecaoFolheto {
     private Folheto folheto;
 
     private Integer ordem;
+
+    public SecaoFolheto(SecaoFolhetoDTO dto){
+        this.tipo = dto.tipo();
+        this.conteudo = dto.conteudo();
+    }
 }

@@ -20,19 +20,21 @@ import java.util.stream.Collectors;
 @Service
 public class FolhetoService {
 
-    private final FolhetoRepository repository;
+    private final FolhetoRepository folhetoRepository;
     private final SecaoRepository secaoRepository;
+    private static final int MIN_SECOES = 5;
+    private static final int MAX_SECOES = 10;
 
     public FolhetoService(FolhetoRepository repository,
                           SecaoRepository secaoRepository) {
-        this.repository = repository;
+        this.folhetoRepository = repository;
         this.secaoRepository = secaoRepository;
     }
 
     private void validarIds(List<Long> ids) throws RegraNegocioException {
 
-        if (ids.size() < 5 || ids.size() > 10) {
-            throw new RegraNegocioException("O folheto deve ter entre 5 e 10 seções.");
+        if (ids == null || ids.isEmpty()) {
+            throw new RegraNegocioException("O folheto precisa ter seções.");
         }
 
         Set<Long> unicos = new HashSet<>(ids);
@@ -55,6 +57,8 @@ public class FolhetoService {
     @Transactional
     public FolhetoDTO cadastrarFolheto(FolhetoDTO dto) throws RegraNegocioException {
 
+        validarIds(dto.secoesIds());
+
         List<SecaoFolheto> secoes = secaoRepository.findAllById(dto.secoesIds());
 
         if (secoes.size() != dto.secoesIds().size()) {
@@ -67,20 +71,23 @@ public class FolhetoService {
         Folheto folheto = new Folheto();
         folheto.setTitulo(dto.titulo());
 
-        secoes.forEach(secao -> secao.setFolheto(folheto));
+        secoes.forEach(folheto::adicionarSecao);
 
         folheto.setSecoes(secoes);
 
-        return new FolhetoDTO(repository.save(folheto));
+        return new FolhetoDTO(folhetoRepository.save(folheto));
     }
 
     public Page<FolhetoDTO> listar(Pageable pageable) {
-        return repository.findAll(pageable).map(FolhetoDTO::new);
+        return folhetoRepository.findAll(pageable).map(FolhetoDTO::new);
 
     }
 
     @Transactional
-    public void excluir(Long id) {
-        repository.deleteById(id);
+    public void excluir(Long id) throws RegraNegocioException {
+        if (!folhetoRepository.existsById(id)) {
+            throw new RegraNegocioException("Folheto não encontrado.");
+        }
+        folhetoRepository.deleteById(id);
     }
 }

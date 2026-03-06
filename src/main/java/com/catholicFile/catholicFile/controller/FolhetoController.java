@@ -34,7 +34,7 @@ public class FolhetoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirFolheto(@PathVariable Long id) {
+    public ResponseEntity<Void> excluirFolheto(@PathVariable Long id) throws RegraNegocioException {
         folhetoService.excluir(id);
         return ResponseEntity.noContent().build();
 

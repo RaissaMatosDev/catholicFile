@@ -2,12 +2,15 @@ package com.catholicFile.catholicFile.DTOs;
 
 import com.catholicFile.catholicFile.entities.Folheto;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 public record FolhetoDTO(
         Long id,
         String titulo,
+
+        @NotNull
         List<Long> secoesIds
 ) {
 
