@@ -88,10 +88,11 @@ Ou execute pela sua IDE.
 ---
 
 ## 🔮 Próximos passos (roadmap)
+```✅FEITO```
 
-* 🔲 Geração de PDF dos folhetos
-* 🔲 Layout em duas colunas
-* 🔲 Seções opcionais configuráveis
+* 🔲 Geração de PDF dos folhetos ✅
+* 🔲 Layout em duas colunas ✅
+* 🔲 Seções opcionais configuráveis ✅
 * 🔲 Autenticação JWT
 * 🔲 Frontend em Angular
 * 🔲 Deploy em nuvem
