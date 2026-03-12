@@ -7,11 +7,16 @@ import com.catholicFile.catholicFile.enums.TipoSecao;
 import com.catholicFile.catholicFile.infra.RegraNegocioException;
 import com.catholicFile.catholicFile.repositories.FolhetoRepository;
 import com.catholicFile.catholicFile.repositories.SecaoRepository;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
+import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,13 +25,15 @@ import java.util.stream.Collectors;
 @Service
 public class FolhetoService {
 
+    private final SecaoService secaoService;
     private final FolhetoRepository folhetoRepository;
     private final SecaoRepository secaoRepository;
     private static final int MIN_SECOES = 5;
     private static final int MAX_SECOES = 10;
 
-    public FolhetoService(FolhetoRepository repository,
+    public FolhetoService(SecaoService secaoService, FolhetoRepository repository,
                           SecaoRepository secaoRepository) {
+        this.secaoService = secaoService;
         this.folhetoRepository = repository;
         this.secaoRepository = secaoRepository;
     }
@@ -89,5 +96,41 @@ public class FolhetoService {
             throw new RegraNegocioException("Folheto não encontrado.");
         }
         folhetoRepository.deleteById(id);
+    }
+
+    public byte[] gerarPdf(Long folhetoId) throws Exception {
+
+        List<SecaoFolheto> secoes =
+                secaoService.buscarSecoesPorFolheto(folhetoId);
+
+        StringBuilder secoesHtml = new StringBuilder();
+
+        for (SecaoFolheto secao : secoes) {
+
+            secoesHtml.append("""
+                <div class="secao">
+                    <div class="tipo">%s</div>
+                    <div class="conteudo">%s</div>
+                </div>
+            """.formatted(
+                    secao.getTipo(),
+                    secao.getConteudo()
+            ));
+        }
+
+        String template = Files.readString(
+                Paths.get("src/main/resources/templates/folheto.html")
+        );
+
+        String htmlFinal = template.replace("{{secoes}}", secoesHtml.toString());
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        PdfRendererBuilder builder = new PdfRendererBuilder();
+        builder.withHtmlContent(htmlFinal, null);
+        builder.toStream(outputStream);
+        builder.run();
+
+        return outputStream.toByteArray();
     }
 }

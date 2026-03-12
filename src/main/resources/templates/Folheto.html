@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: "Times New Roman", serif;
+            column-count: 2;
+            column-gap: 1cm;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .titulo {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .secao {
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+
+        .tipo {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .conteudo {
+            white-space: pre-line;
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="titulo" th:text="${titulo}">Folheto da Missa</div>
+
+<!-- Itera sobre a lista de seções -->
+<div th:each="secao : ${secoes}" class="secao">
+    <div class="tipo" th:text="${secao.tipo}">TIPO</div>
+    <div class="conteudo" th:text="${secao.conteudo}">CONTEÚDO</div>
+</div>
+
+</body>
+</html>

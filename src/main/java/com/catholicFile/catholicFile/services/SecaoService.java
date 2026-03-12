@@ -17,15 +17,19 @@ public class SecaoService {
             this.repository = repository;
         }
 
-    @Transactional
-    public SecaoFolheto criar(SecaoFolhetoDTO dto) {
+        public List<SecaoFolheto> buscarSecoesPorFolheto(Long folhetoId) {
+        return repository.findByFolhetoId(folhetoId);
+        }
+
+        @Transactional
+        public SecaoFolheto criar(SecaoFolhetoDTO dto) {
 
         SecaoFolheto secao = new SecaoFolheto();
         secao.setTipo(dto.tipo());
         secao.setConteudo(dto.conteudo());
 
         return repository.save(secao);
-    }
+        }
 
         public List<SecaoFolheto> listar() {
             return repository.findAll();
@@ -46,6 +50,8 @@ public class SecaoService {
 
         return repository.save(secao);
     }
+
+    
 }
 
 

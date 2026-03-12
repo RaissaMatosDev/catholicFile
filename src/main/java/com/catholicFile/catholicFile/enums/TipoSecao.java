@@ -6,9 +6,10 @@ public enum TipoSecao {
     GLORIA,
     ACLAMACAO,
     OFERTORIO,
+    SANTO,
     COMUNHAO,
     POS_COMUNHAO,
     FINAL,
     SALMO,
-    PROCISSAO_DAS_CINZAS
+    PERSONALIZADO
 }

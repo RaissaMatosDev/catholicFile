@@ -3,12 +3,13 @@ package com.catholicFile.catholicFile.controller;
 
 import com.catholicFile.catholicFile.DTOs.SecaoFolhetoDTO;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
-import com.catholicFile.catholicFile.repositories.SecaoRepository;
 import com.catholicFile.catholicFile.services.SecaoService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/secoes")
@@ -19,6 +20,11 @@ public class SecaoController {
 
     public SecaoController(SecaoService secaoService) {
         this.secaoService = secaoService;
+    }
+
+    @GetMapping
+    public List<SecaoFolheto> listarSecoes(@PathVariable Long id) {
+        return secaoService.buscarSecoesPorFolheto(id);
     }
     @Transactional
     @PostMapping
