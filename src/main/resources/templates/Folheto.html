@@ -1,56 +1,87 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8"/>
 
     <style>
+
         @page {
             size: A4;
             margin: 1cm;
         }
 
-        body {
+        body{
             font-family: "Times New Roman", serif;
-            column-count: 2;
-            column-gap: 1cm;
             font-size: 14px;
             line-height: 1.4;
         }
 
-        .titulo {
+        /* título do folheto */
+
+        .titulo{
             text-align: center;
             font-size: 22px;
             font-weight: bold;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
-        .secao {
-            margin-bottom: 12px;
+        /* container das duas colunas */
+
+        .colunas{
+            column-count: 2;
+            column-gap: 1cm;
+        }
+
+        /* cada seção */
+
+        .secao{
+            margin-bottom: 14px;
             page-break-inside: avoid;
+            break-inside: avoid;
         }
 
-        .tipo {
+        /* título da seção */
+
+        .tipo{
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             margin-bottom: 4px;
         }
 
-        .conteudo {
+        /* texto */
+
+        .conteudo{
             white-space: pre-line;
             text-align: justify;
         }
+
     </style>
 </head>
 
 <body>
 
-<div class="titulo" th:text="${titulo}">Folheto da Missa</div>
+<div class="titulo" th:text="${folheto.titulo}">
+    Folheto da Missa
+</div>
 
-<!-- Itera sobre a lista de seções -->
-<div th:each="secao : ${secoes}" class="secao">
-    <div class="tipo" th:text="${secao.tipo}">TIPO</div>
-    <div class="conteudo" th:text="${secao.conteudo}">CONTEÚDO</div>
+<div class="colunas">
+
+    <div th:each="secao : ${folheto.secoes}" class="secao">
+
+        <div class="tipo"
+             th:text="${#strings.replace(secao.tipo,'_',' ')}">
+            Tipo da seção
+        </div>
+
+        <div class="conteudo"
+             th:text="${secao.conteudo}">
+            Conteúdo
+        </div>
+
+    </div>
+
 </div>
 
 </body>

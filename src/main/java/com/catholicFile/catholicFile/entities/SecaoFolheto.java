@@ -30,7 +30,7 @@ public class SecaoFolheto {
     private String conteudo;
 
     @ManyToOne
-    @JoinColumn(name = "folheto_id")
+    @JoinColumn(name = "folheto_id", nullable = true)
     private Folheto folheto;
 
 

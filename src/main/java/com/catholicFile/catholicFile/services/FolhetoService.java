@@ -12,11 +12,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,15 +25,13 @@ import java.util.stream.Collectors;
 @Service
 public class FolhetoService {
 
-    private final SecaoService secaoService;
+    private final TemplateEngine templateEngine;
     private final FolhetoRepository folhetoRepository;
     private final SecaoRepository secaoRepository;
-    private static final int MIN_SECOES = 5;
-    private static final int MAX_SECOES = 10;
 
-    public FolhetoService(SecaoService secaoService, FolhetoRepository repository,
+    public FolhetoService(TemplateEngine templateEngine, FolhetoRepository repository,
                           SecaoRepository secaoRepository) {
-        this.secaoService = secaoService;
+        this.templateEngine = templateEngine;
         this.folhetoRepository = repository;
         this.secaoRepository = secaoRepository;
     }
@@ -99,38 +97,33 @@ public class FolhetoService {
     }
 
     public byte[] gerarPdf(Long folhetoId) throws Exception {
+        // Busca o folheto completo (com seções e conteúdos)
+        Folheto folheto = folhetoRepository.findById(folhetoId)
+                .orElseThrow(() -> new RuntimeException("Folheto não encontrado"));
 
-        List<SecaoFolheto> secoes =
-                secaoService.buscarSecoesPorFolheto(folhetoId);
+        //Faz a ordenação das seções de acordo com o enum TipoSecao ordinalmente
+        List<SecaoFolheto> secoesOrdenadas = folheto.getSecoes()
+                .stream()
+                .sorted(Comparator.comparing(s -> s.getTipo().ordinal()))
+                .toList();
 
-        StringBuilder secoesHtml = new StringBuilder();
+        folheto.setSecoes(secoesOrdenadas);
+        // Prepara o contexto Thymeleaf
+        Context context = new Context();
+        context.setVariable("folheto", folheto);
 
-        for (SecaoFolheto secao : secoes) {
+        // Processa o template Thymeleaf
+        String htmlFinal = templateEngine.process("folheto", context);
 
-            secoesHtml.append("""
-                <div class="secao">
-                    <div class="tipo">%s</div>
-                    <div class="conteudo">%s</div>
-                </div>
-            """.formatted(
-                    secao.getTipo(),
-                    secao.getConteudo()
-            ));
-        }
-
-        String template = Files.readString(
-                Paths.get("src/main/resources/templates/folheto.html")
-        );
-
-        String htmlFinal = template.replace("{{secoes}}", secoesHtml.toString());
-
+        // Converte para PDF
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
         PdfRendererBuilder builder = new PdfRendererBuilder();
         builder.withHtmlContent(htmlFinal, null);
         builder.toStream(outputStream);
         builder.run();
+        builder.useFastMode();
 
         return outputStream.toByteArray();
+
     }
 }

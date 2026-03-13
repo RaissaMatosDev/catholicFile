@@ -6,6 +6,7 @@ import com.catholicFile.catholicFile.repositories.SecaoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -18,7 +19,11 @@ public class SecaoService {
         }
 
         public List<SecaoFolheto> buscarSecoesPorFolheto(Long folhetoId) {
-        return repository.findByFolhetoId(folhetoId);
+            List<SecaoFolheto> secoes = repository.findByFolhetoId(folhetoId);
+
+            secoes.sort(Comparator.comparing(secao -> secao.getTipo().ordinal()));
+
+            return secoes;
         }
 
         @Transactional
