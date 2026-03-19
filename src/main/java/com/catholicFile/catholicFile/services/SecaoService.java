@@ -2,6 +2,9 @@ package com.catholicFile.catholicFile.services;
 
 import com.catholicFile.catholicFile.DTOs.SecaoFolhetoDTO;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
+import com.catholicFile.catholicFile.enums.TempoLit;
+import com.catholicFile.catholicFile.enums.TipoSecao;
+import com.catholicFile.catholicFile.infra.RecursoNaoEncontradoException;
 import com.catholicFile.catholicFile.repositories.SecaoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -12,38 +15,38 @@ import java.util.List;
 @Service
 public class SecaoService {
 
-        private final SecaoRepository repository;
+    private final SecaoRepository repository;
 
-        public SecaoService(SecaoRepository repository) {
-            this.repository = repository;
-        }
+    public SecaoService(SecaoRepository repository) {
+        this.repository = repository;
+    }
 
-        public List<SecaoFolheto> buscarSecoesPorFolheto(Long folhetoId) {
-            List<SecaoFolheto> secoes = repository.findByFolhetoId(folhetoId);
+    public List<SecaoFolheto> buscarSecoesPorFolheto(Long folhetoId) {
+        List<SecaoFolheto> secoes = repository.findByFolhetoId(folhetoId);
 
-            secoes.sort(Comparator.comparing(secao -> secao.getTipo().ordinal()));
+        secoes.sort(Comparator.comparing(secao -> secao.getTipo().ordinal()));
 
-            return secoes;
-        }
+        return secoes;
+    }
 
-        @Transactional
-        public SecaoFolheto criar(SecaoFolhetoDTO dto) {
+    @Transactional
+    public SecaoFolheto criar(SecaoFolhetoDTO dto) {
 
         SecaoFolheto secao = new SecaoFolheto();
         secao.setTipo(dto.tipo());
         secao.setConteudo(dto.conteudo());
 
         return repository.save(secao);
-        }
+    }
 
-        public List<SecaoFolheto> listar() {
-            return repository.findAll();
-        }
+    public List<SecaoFolheto> listar() {
+        return repository.findAll();
+    }
 
-        @Transactional
-        public void excluir(Long id) {
-            repository.deleteById(id);
-        }
+    @Transactional
+    public void excluir(Long id) {
+        repository.deleteById(id);
+    }
 
     public SecaoFolheto atualizar(Long id, SecaoFolhetoDTO dto) {
 
@@ -56,11 +59,15 @@ public class SecaoService {
         return repository.save(secao);
     }
 
-    public List<SecaoFolheto> buscarPorPalavraChave(String palavra) {
-        return repository.findByConteudoContainingIgnoreCaseOrTituloContainingIgnoreCase(palavra, palavra);
-    }
+    public List<SecaoFolheto> filtrarSecoes(String palavra, TipoSecao tipo, TempoLit lit) {
+        List<SecaoFolheto> secoes = repository.filtrarSecoes(palavra, tipo, lit);
 
-    
+        if (secoes.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Nenhuma seção encontrada com os filtros aplicados.");
+        }
+
+        return secoes;
+    }
 }
 
 

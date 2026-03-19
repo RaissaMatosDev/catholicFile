@@ -13,7 +13,9 @@ import lombok.*;
 // (um folheto contem varias secoes folheto).
 
 @Entity
-@Table(name = "secao_folheto")
+@Table(name = "secao_folheto",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"folheto_id", "tipo"})
+)
 @Getter
 @Setter
 @NoArgsConstructor

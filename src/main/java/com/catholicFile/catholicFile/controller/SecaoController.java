@@ -3,6 +3,8 @@ package com.catholicFile.catholicFile.controller;
 
 import com.catholicFile.catholicFile.DTOs.SecaoFolhetoDTO;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
+import com.catholicFile.catholicFile.enums.TempoLit;
+import com.catholicFile.catholicFile.enums.TipoSecao;
 import com.catholicFile.catholicFile.services.SecaoService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -27,9 +29,14 @@ public class SecaoController {
         return secaoService.buscarSecoesPorFolheto(id);
     }
 
-    @GetMapping("/buscar")
-    public ResponseEntity<List<SecaoFolheto>> buscar(@RequestParam String palavra) {
-        List<SecaoFolheto> secoes = secaoService.buscarPorPalavraChave(palavra);
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<SecaoFolheto>> filtrar(
+            @RequestParam String palavra,
+            @RequestParam(required = false) TipoSecao tipo,
+            @RequestParam(required = false) TempoLit lit) {
+
+
+        List<SecaoFolheto> secoes = secaoService.filtrarSecoes(palavra, tipo, lit);
         return ResponseEntity.ok(secoes);
     }
 
