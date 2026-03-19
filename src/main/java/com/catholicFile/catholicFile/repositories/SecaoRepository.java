@@ -1,6 +1,7 @@
 package com.catholicFile.catholicFile.repositories;
 
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
+import com.catholicFile.catholicFile.enums.TempoLit;
 import com.catholicFile.catholicFile.enums.TipoSecao;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,6 +10,10 @@ import java.util.Optional;
 
 public interface SecaoRepository extends JpaRepository<SecaoFolheto, Long> {
     List<SecaoFolheto> findByFolhetoId(Long folhetoId);
-    Optional<SecaoFolheto> findByFolhetoIdAndTipo(Long folhetoId, TipoSecao tipo);
+    Optional<SecaoFolheto> findByFolhetoIdAndTipo(Long folhetoId, TipoSecao tipo, TempoLit lit);
 
+
+    List<SecaoFolheto> findByConteudoContainingIgnoreCaseOrTituloContainingIgnoreCase(
+            String conteudo, String titulo
+    );
 }

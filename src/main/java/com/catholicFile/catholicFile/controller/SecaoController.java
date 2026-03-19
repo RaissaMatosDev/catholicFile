@@ -26,6 +26,13 @@ public class SecaoController {
     public List<SecaoFolheto> listarSecoes(@PathVariable Long id) {
         return secaoService.buscarSecoesPorFolheto(id);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<SecaoFolheto>> buscar(@RequestParam String palavra) {
+        List<SecaoFolheto> secoes = secaoService.buscarPorPalavraChave(palavra);
+        return ResponseEntity.ok(secoes);
+    }
+
     @Transactional
     @PostMapping
     public ResponseEntity<SecaoFolheto> criar(@RequestBody SecaoFolhetoDTO dto) {

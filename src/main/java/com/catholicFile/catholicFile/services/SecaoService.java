@@ -56,6 +56,10 @@ public class SecaoService {
         return repository.save(secao);
     }
 
+    public List<SecaoFolheto> buscarPorPalavraChave(String palavra) {
+        return repository.findByConteudoContainingIgnoreCaseOrTituloContainingIgnoreCase(palavra, palavra);
+    }
+
     
 }
 

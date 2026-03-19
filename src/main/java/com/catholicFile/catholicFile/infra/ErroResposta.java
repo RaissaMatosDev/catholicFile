@@ -5,5 +5,7 @@ import java.time.LocalDateTime;
 public record ErroResposta(
         LocalDateTime timestamp,
         int status,
-        String mensagem
+        String error,
+        String mensagem,
+        String path
 ) {}

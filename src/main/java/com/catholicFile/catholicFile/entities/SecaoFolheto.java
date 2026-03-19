@@ -2,6 +2,7 @@ package com.catholicFile.catholicFile.entities;
 
 
 import com.catholicFile.catholicFile.DTOs.SecaoFolhetoDTO;
+import com.catholicFile.catholicFile.enums.TempoLit;
 import com.catholicFile.catholicFile.enums.TipoSecao;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,12 @@ public class SecaoFolheto {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo")
     private TipoSecao tipo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tempo_lit")
+    private TempoLit lit;
 
     @Column(columnDefinition = "TEXT")
     private String conteudo;

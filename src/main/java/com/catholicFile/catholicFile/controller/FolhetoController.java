@@ -2,7 +2,7 @@ package com.catholicFile.catholicFile.controller;
 
 
 import com.catholicFile.catholicFile.DTOs.FolhetoDTO;
-import com.catholicFile.catholicFile.infra.RegraNegocioException;
+import com.catholicFile.catholicFile.infra.RecursoNaoEncontradoException;
 import com.catholicFile.catholicFile.services.FolhetoService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class FolhetoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<FolhetoDTO> cadastrarFolheto(@RequestBody @Valid FolhetoDTO dados) throws RegraNegocioException {
+    public ResponseEntity<FolhetoDTO> cadastrarFolheto(@RequestBody @Valid FolhetoDTO dados) throws RecursoNaoEncontradoException {
         var folhetoSalvo = folhetoService.cadastrarFolheto(dados);
 
         return ResponseEntity
@@ -47,7 +47,7 @@ public class FolhetoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirFolheto(@PathVariable Long id) throws RegraNegocioException {
+    public ResponseEntity<Void> excluirFolheto(@PathVariable Long id) throws RecursoNaoEncontradoException {
         folhetoService.excluir(id);
         return ResponseEntity.noContent().build();
 

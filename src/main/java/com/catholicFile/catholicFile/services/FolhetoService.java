@@ -4,7 +4,7 @@ import com.catholicFile.catholicFile.DTOs.FolhetoDTO;
 import com.catholicFile.catholicFile.entities.Folheto;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
 import com.catholicFile.catholicFile.enums.TipoSecao;
-import com.catholicFile.catholicFile.infra.RegraNegocioException;
+import com.catholicFile.catholicFile.infra.RecursoNaoEncontradoException;
 import com.catholicFile.catholicFile.repositories.FolhetoRepository;
 import com.catholicFile.catholicFile.repositories.SecaoRepository;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
@@ -36,38 +36,38 @@ public class FolhetoService {
         this.secaoRepository = secaoRepository;
     }
 
-    private void validarIds(List<Long> ids) throws RegraNegocioException {
+    private void validarIds(List<Long> ids) throws RecursoNaoEncontradoException {
 
         if (ids == null || ids.isEmpty()) {
-            throw new RegraNegocioException("O folheto precisa ter seções.");
+            throw new RecursoNaoEncontradoException("O folheto precisa ter seções.");
         }
 
         Set<Long> unicos = new HashSet<>(ids);
 
         if (unicos.size() != ids.size()) {
-            throw new RegraNegocioException("Não pode repetir seção.");
+            throw new RecursoNaoEncontradoException("Não pode repetir seção.");
         }
     }
-    private void validarTipos(List<SecaoFolheto> secoes) throws RegraNegocioException {
+    private void validarTipos(List<SecaoFolheto> secoes) throws RecursoNaoEncontradoException {
 
         Set<TipoSecao> tipos = secoes.stream()
                 .map(SecaoFolheto::getTipo)
                 .collect(Collectors.toSet());
 
         if (tipos.size() != secoes.size()) {
-            throw new RegraNegocioException("Não pode repetir tipo de seção.");
+            throw new RecursoNaoEncontradoException("Não pode repetir tipo de seção.");
         }
     }
 
     @Transactional
-    public FolhetoDTO cadastrarFolheto(FolhetoDTO dto) throws RegraNegocioException {
+    public FolhetoDTO cadastrarFolheto(FolhetoDTO dto) throws RecursoNaoEncontradoException {
 
         validarIds(dto.secoesIds());
 
         List<SecaoFolheto> secoes = secaoRepository.findAllById(dto.secoesIds());
 
         if (secoes.size() != dto.secoesIds().size()) {
-            throw new RegraNegocioException("Uma ou mais seções não existem.");
+            throw new RecursoNaoEncontradoException("Uma ou mais seções não existem.");
         }
 
         validarIds(dto.secoesIds());
@@ -89,9 +89,9 @@ public class FolhetoService {
     }
 
     @Transactional
-    public void excluir(Long id) throws RegraNegocioException {
+    public void excluir(Long id) throws RecursoNaoEncontradoException {
         if (!folhetoRepository.existsById(id)) {
-            throw new RegraNegocioException("Folheto não encontrado.");
+            throw new RecursoNaoEncontradoException("Folheto não encontrado.");
         }
         folhetoRepository.deleteById(id);
     }
