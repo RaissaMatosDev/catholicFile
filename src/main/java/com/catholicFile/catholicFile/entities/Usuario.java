@@ -35,6 +35,7 @@ public class Usuario {
         this.nome = dto.nome();
         this.email = dto.email();
         this.senha = dto.senha();
+        this.role = dto.role();
     }
     public void atualizarInformacoes(UsuarioAttDTO dto) {
         if (dto.nome() != null) {

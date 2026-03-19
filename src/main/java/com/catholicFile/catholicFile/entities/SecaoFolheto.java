@@ -34,6 +34,10 @@ public class SecaoFolheto {
     @Column(name = "tempo_lit")
     private TempoLit lit;
 
+
+    @Column(columnDefinition = "TEXT")
+    private String titulo;
+
     @Column(columnDefinition = "TEXT")
     private String conteudo;
 

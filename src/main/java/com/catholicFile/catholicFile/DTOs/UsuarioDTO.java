@@ -22,6 +22,7 @@ public record UsuarioDTO(
                          UserRole role
 
                          ) {
+
     public UsuarioDTO(Usuario usuario) {
         this(
                 usuario.getId(),
