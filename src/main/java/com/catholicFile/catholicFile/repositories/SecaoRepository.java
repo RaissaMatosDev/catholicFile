@@ -3,6 +3,8 @@ package com.catholicFile.catholicFile.repositories;
 import com.catholicFile.catholicFile.entities.SecaoFolheto;
 import com.catholicFile.catholicFile.enums.TempoLit;
 import com.catholicFile.catholicFile.enums.TipoSecao;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,9 +24,10 @@ public interface SecaoRepository extends JpaRepository<SecaoFolheto, Long> {
                   AND (:tipo IS NULL OR s.tipo = :tipo)
                   AND (:lit IS NULL OR s.lit = :lit)
             """)
-    List<SecaoFolheto> filtrarSecoes(
+    Page<SecaoFolheto> filtrar(
             @Param("palavra") String palavra,
             @Param("tipo") TipoSecao tipo,
-            @Param("lit") TempoLit lit
+            @Param("lit") TempoLit lit,
+            Pageable pageable
     );
 }

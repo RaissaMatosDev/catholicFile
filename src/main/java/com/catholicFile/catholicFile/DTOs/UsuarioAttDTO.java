@@ -1,25 +1,29 @@
 package com.catholicFile.catholicFile.DTOs;
 
 import com.catholicFile.catholicFile.enums.UserRole;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Schema(description = "Informações que um usuario pode alterar")
 public record UsuarioAttDTO(
 
-                            @NotBlank
+                            @Schema(description = "Nome", example = "Camila Silva")
                             String nome,
 
-                            Long id,
-
+                            @Schema(description = "Email", example = "Raissa@hotmail.com")
                             @NotNull(message = "Email inválido!")
                             @Email(message = "Email é inválido!")
                             String email,
 
-                            @NotBlank @Valid
-                            String senha,
+                            @Schema(description = "Senha", example = "gatoFeio123")
+                            String senhaAtual,
 
-                            UserRole USUARIO)
+                            @Schema(description = "Senha atualização", example = "gatoFeio1234")
+                            String novaSenha,
+
+                            @Schema(description = "Permissão do usuario tambem pode ser alterada", example = "USUARIO, ADMINISTRADOR")
+                            UserRole role)
 
 {}
+

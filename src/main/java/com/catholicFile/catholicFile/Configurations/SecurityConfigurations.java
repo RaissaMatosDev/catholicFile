@@ -2,6 +2,8 @@ package com.catholicFile.catholicFile.Configurations;
 
 
 import com.catholicFile.catholicFile.services.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,15 +14,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 
     @Configuration
     @EnableWebSecurity
     @EnableMethodSecurity
+    @SecurityScheme(name = SecurityConfigurations.SECURITY, type = SecuritySchemeType.HTTP,bearerFormat = "JWT", scheme = "bearer")
 
     public class SecurityConfigurations {
         private final JwtFilter jwtFilter;
+
+        public static final String SECURITY = "bearerAuth";
 
         public SecurityConfigurations(JwtFilter jwtFilter) {
             this.jwtFilter = jwtFilter;
@@ -37,19 +42,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
             return new BCryptPasswordEncoder();
         }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http
-                    .csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(req -> req
-                            .requestMatchers("/usuarios/login","/usuarios" ).permitAll()
-                            .anyRequest().authenticated()
-                    )
-                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                    .build();
+
+            @Bean
+            public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            
+
+                    http
+                            .authorizeHttpRequests(auth -> auth
+                                    // Swagger UI e JSON
+                                    .requestMatchers(
+                                            "/v3/api-docs/**",
+                                            "/swagger-ui/**",
+                                            "/swagger-ui.html"
+                                    ).permitAll()
+
+                                    .requestMatchers("/usuarios/login", "/usuarios").permitAll()
+                                    .anyRequest().authenticated()
+                            )
+                            .csrf(csrf -> csrf.disable());
+
+                    return http.build();
+                }
         }
 
 
-    }
 
 

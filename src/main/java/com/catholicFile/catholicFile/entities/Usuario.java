@@ -1,11 +1,10 @@
 package com.catholicFile.catholicFile.entities;
 
 import com.catholicFile.catholicFile.DTOs.UsuarioAttDTO;
-import com.catholicFile.catholicFile.DTOs.UsuarioDTO;
+import com.catholicFile.catholicFile.DTOs.UsuarioCadastroDTO;
 import com.catholicFile.catholicFile.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +37,7 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    public Usuario(UsuarioDTO dto) {
+    public Usuario(UsuarioCadastroDTO dto) {
         this.nome = dto.nome();
         this.email = dto.email();
         this.senha = dto.senha();
@@ -58,33 +57,33 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public @Nullable String getPassword() {
-        return "";
+    public String getPassword() {
+        return this.senha; // retorna a senha armazenada
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true; // conta nunca expira
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true; // conta nunca é bloqueada
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true; // credenciais nunca expiram
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true; // usuário sempre habilitado
     }
 
 }

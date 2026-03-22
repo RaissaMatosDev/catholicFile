@@ -1,8 +1,15 @@
 package com.catholicFile.catholicFile.controller;
 
-import com.catholicFile.catholicFile.DTOs.UsuarioAttDTO;
-import com.catholicFile.catholicFile.DTOs.UsuarioDTO;
+import com.catholicFile.catholicFile.Configurations.SecurityConfigurations;
+import com.catholicFile.catholicFile.DTOs.*;
 import com.catholicFile.catholicFile.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,63 +17,181 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.Map;
 
-
 @RestController
-@RequestMapping ("/usuarios")
-
+@RequestMapping("/usuarios")
+@Tag(name = "Usuário", description = "Endpoints para gerenciamento de usuários e autenticação")
+@SecurityRequirement(name = SecurityConfigurations.SECURITY)
 public class UsuarioController {
 
     @Autowired
     private final UsuarioService usuarioService;
 
-    public UsuarioController( UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
+    @Operation(summary = "Login do usuário")
+    @ApiResponses(value = {
+
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login realizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = LoginResponseDTO.class)
+                    )
+            ),
+
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Credenciais inválidas",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class)
+                    )
+            )
+    })
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> dados) {
-        String email = dados.get("email");
-        String senha = dados.get("senha");
-        String token = usuarioService.autenticar(email, senha);
-        return ResponseEntity.ok(Map.of("token", token));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dados) {
+
+        String token = usuarioService.autenticar(dados.email(), dados.senha());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token, "Bearer"));
     }
 
-    @PostMapping
-    public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody @Valid UsuarioDTO dados) {
-        var usuarioSalvo = usuarioService.cadastrar(dados);
+    @Operation(summary = "Atualiza o perfil do usuário logado")
+    @ApiResponses(value = {
 
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Perfil atualizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDTO.class)
+                    )
+            ),
+
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class)
+                    )
+            )
+    })
+    @PutMapping("/meu-perfil")
+    public ResponseEntity<UsuarioDTO> atualizarMeuPerfil(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid UsuarioAttDTO dto) {
+        var atualizado = usuarioService.atualizarMeuPerfil(dto, userDetails.getUsername());
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @Operation(summary = "Cadastra um novo usuário")
+    @ApiResponses(value = {
+
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Usuário cadastrado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDTO.class)
+                    )
+            ),
+
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class)
+                    )
+            )
+    })
+    @PostMapping
+    public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody @Valid UsuarioCadastroDTO dados) {
+        var usuarioSalvo = usuarioService.cadastrar(dados);
         return ResponseEntity
                 .created(URI.create("/usuarios/" + usuarioSalvo.id()))
                 .body(usuarioSalvo);
     }
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping
-    public ResponseEntity<Page<UsuarioDTO>> listar(
-            @PageableDefault(size = 10, sort = "nome") Pageable pageable){
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de usuários retornada com sucesso",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UsuarioDTO.class)
+            )
+    )
+    @GetMapping("/listar")
+    public ResponseEntity<Page<UsuarioCadastroDTO>> listar(
+            @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
         var page = usuarioService.listar(pageable);
         return ResponseEntity.ok(page);
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioAttDTO dados) {
-        var usuarioAtualizado = usuarioService.atualizar(dados);
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Atualiza um usuário pelo ID")
+    @ApiResponses(value = {
+
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário atualizado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioDTO.class)
+                    )
+            ),
+
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class)
+                    )
+            )
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id,
+                                                @RequestBody @Valid UsuarioAttDTO dados) {
+        var usuarioAtualizado = usuarioService.atualizarPorId(id, dados);
         return ResponseEntity.ok(usuarioAtualizado);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Exclui um usuário pelo ID")
+    @ApiResponses(value = {
+
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Usuário excluído com sucesso",
+                    content = @Content
+            ),
+
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class)
+                    )
+            )
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         usuarioService.excluir(id);
         return ResponseEntity.noContent().build();
-
     }
-
 }

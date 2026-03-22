@@ -32,9 +32,12 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Ignora endpoints públicos
+        // Ignora endpoints públicos inclusive o da documentação
         String path = request.getRequestURI();
-        if (path.equals("/usuarios/cadastrar") || path.equals("/usuarios/login")) {
+        if (path.startsWith("/v3/api-docs") ||
+            path.startsWith("/swagger-ui") ||
+            path.equals("/usuarios/cadastrar") ||
+            path.equals("/usuarios/login")) {
             filterChain.doFilter(request, response);
             return;
         }

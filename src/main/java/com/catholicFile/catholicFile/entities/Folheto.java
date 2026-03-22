@@ -2,6 +2,7 @@ package com.catholicFile.catholicFile.entities;
 
 
 import com.catholicFile.catholicFile.DTOs.FolhetoDTO;
+import com.catholicFile.catholicFile.enums.TempoLit;
 import com.catholicFile.catholicFile.enums.TipoSecao;
 import jakarta.persistence.*;
 
@@ -23,7 +24,11 @@ public class Folheto {
 
     private String titulo;
 
-    @OneToMany(mappedBy = "folheto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TempoLit lit;
+    @Column(name = "secoes_ids", columnDefinition = "TEXT")
+    private String secoesIds;
+
+    @OneToMany(mappedBy = "folheto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<SecaoFolheto> secoes = new ArrayList<>();
 
     public void adicionarSecao(SecaoFolheto secao){

@@ -11,6 +11,7 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -39,13 +40,13 @@ public class FolhetoService {
     private void validarIds(List<Long> ids) throws RecursoNaoEncontradoException {
 
         if (ids == null || ids.isEmpty()) {
-            throw new RecursoNaoEncontradoException("O folheto precisa ter seções.");
+            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "O folheto precisa ter seções.");
         }
 
         Set<Long> unicos = new HashSet<>(ids);
 
         if (unicos.size() != ids.size()) {
-            throw new RecursoNaoEncontradoException("Não pode repetir seção.");
+            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Não pode repetir seção.");
         }
     }
     private void validarTipos(List<SecaoFolheto> secoes) throws RecursoNaoEncontradoException {
@@ -55,43 +56,50 @@ public class FolhetoService {
                 .collect(Collectors.toSet());
 
         if (tipos.size() != secoes.size()) {
-            throw new RecursoNaoEncontradoException("Não pode repetir tipo de seção.");
+            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Não pode repetir tipo de seção.");
         }
     }
 
     @Transactional
     public FolhetoDTO cadastrarFolheto(FolhetoDTO dto) throws RecursoNaoEncontradoException {
 
+        // Valida IDs do DTO
         validarIds(dto.secoesIds());
 
+        // Busca as seções pelos IDs
         List<SecaoFolheto> secoes = secaoRepository.findAllById(dto.secoesIds());
-
         if (secoes.size() != dto.secoesIds().size()) {
-            throw new RecursoNaoEncontradoException("Uma ou mais seções não existem.");
+            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Uma ou mais seções não existem.");
         }
 
-        validarIds(dto.secoesIds());
+        // Valida tipos (não pode repetir)
         validarTipos(secoes);
 
+        // Cria o folheto
         Folheto folheto = new Folheto();
         folheto.setTitulo(dto.titulo());
+        folheto.setLit(dto.lit());
 
+        // Adiciona as seções e garante vínculo bidirecional
         secoes.forEach(folheto::adicionarSecao);
 
-        folheto.setSecoes(secoes);
+        // Preenche a coluna secoesIds como string
+        String ids = secoes.stream()
+                .map(s -> s.getId().toString())
+                .collect(Collectors.joining(","));
+        folheto.setSecoesIds(ids);
 
-        return new FolhetoDTO(folhetoRepository.save(folheto));
-    }
+        // Salva o folheto (com seções persistidas)
+        Folheto salvo = folhetoRepository.save(folheto);
 
-    public Page<FolhetoDTO> listar(Pageable pageable) {
-        return folhetoRepository.findAll(pageable).map(FolhetoDTO::new);
-
+        // Retorna o DTO
+        return new FolhetoDTO(salvo);
     }
 
     @Transactional
     public void excluir(Long id) throws RecursoNaoEncontradoException {
         if (!folhetoRepository.existsById(id)) {
-            throw new RecursoNaoEncontradoException("Folheto não encontrado.");
+            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Folheto não encontrado.");
         }
         folhetoRepository.deleteById(id);
     }
@@ -125,5 +133,16 @@ public class FolhetoService {
 
         return outputStream.toByteArray();
 
+    }
+    public Page<FolhetoDTO> listar(Pageable pageable) {
+        return folhetoRepository.findAll(pageable)
+                .map(folheto -> new FolhetoDTO(
+                        folheto.getId(),
+                        folheto.getTitulo(),
+                        folheto.getLit(),
+                        folheto.getSecoes().stream()
+                                .map(SecaoFolheto::getId)
+                                .toList()
+                ));
     }
 }

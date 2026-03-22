@@ -2,28 +2,36 @@ package com.catholicFile.catholicFile.DTOs;
 
 import com.catholicFile.catholicFile.entities.Usuario;
 import com.catholicFile.catholicFile.enums.UserRole;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UsuarioDTO(
 
+@Schema(description = "Informações de cadastro de usuário")
+public record UsuarioCadastroDTO(
+
+                        @Schema(description = "O id é dinamico não podendo ser modificado")
                          Long id,
 
+                        @Schema(description = "O nome completo do usuário")
                          @NotBlank
                          String nome,
 
+                        @Schema(description = "Email do usuário")
                          @NotNull @Email
                          String email,
 
+                        @Schema(description = "Senha do usuario(será armazenada em hash")
                          @NotBlank
                          String senha,
 
+                        @Schema(description = "Apenas um ADMINISTRADOR pode criar um usuário ADMINISTRADOR,em caso de tentativa sem autenticação o programa troca para usuario comum mesmo digitando ADIMINISTRADOR")
                          UserRole role
 
                          ) {
 
-    public UsuarioDTO(Usuario usuario) {
+    public UsuarioCadastroDTO(Usuario usuario) {
         this(
                 usuario.getId(),
                 usuario.getNome(),
