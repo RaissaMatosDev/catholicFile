@@ -2,121 +2,123 @@
 
 API backend desenvolvida em **Java + Spring Boot** para geração e gerenciamento de folhetos de cânticos utilizados em celebrações.
 
-O sistema permite cadastrar usuários, montar folhetos com seções opcionais e futuramente gerar PDFs formatados em duas colunas.
+O sistema permite cadastrar usuários, montar folhetos com seções configuráveis e gerar PDFs formatados para uso real em missas e eventos religiosos.
 
 ---
 
 ## 🚀 Tecnologias utilizadas
 
-* Java 17
-* Spring Boot
-* Spring Data JPA
-* Spring Security
-* Maven
-* Lombok
-* Bean Validation
-* (em breve) geração de PDF
-* (em breve) Angular no frontend
+- Java 17
+- Spring Boot
+- Spring Data JPA
+- Spring Security
+- Maven
+- Lombok
+- Bean Validation
+- PostgreSQL
+- Swagger (OpenAPI)
+- Geração de PDF
+
+🔧 **Em desenvolvimento:**
+
+- Frontend em Angular
 
 ---
 
-## 📌 Funcionalidades atuais
+## 📌 Funcionalidades
 
-* ✅ Cadastro de usuários
-* ✅ Atualização de usuários
-* ✅ Listagem de usuários
-* ✅ Exclusão de usuários
-* ✅ Estrutura inicial de folhetos
-* ✅ Relacionamento entre entidades (JPA)
+### 👤 Usuários
+- ✅ Cadastro de usuários
+- ✅ Atualização de usuários
+- ✅ Listagem paginada
+- ✅ Exclusão de usuários
+
+### 📄 Folhetos
+- ✅ Criação de folhetos
+- ✅ Associação com seções
+- ✅ Gerar PDF
+- ✅ Estrutura modular e escalável
+
+
+### 🧩 Seções
+- ✅ Cadastro de seções de cânticos
+- ✅ Filtros por:
+    - palavra-chave
+    - tipo
+    - tempo litúrgico
+- ✅ Paginação de resultados
+
+### 🔐 Autenticação
+- ✅ Login com geração de token
+- ✅Integração completa com JWT 
 
 ---
 
 ## 🧠 Arquitetura
 
-O projeto segue boas práticas de backend:
+O projeto segue uma arquitetura em camadas bem definida:
 
-* **Controller** → recebe requisições HTTP
-* **Service** → regras de negócio
-* **Repository** → acesso ao banco
-* **DTO** → comunicação da API
-* **Entity** → mapeamento JPA
+- **Controller** → entrada da API (requisições HTTP)
+- **Service** → regras de negócio
+- **Repository** → acesso ao banco de dados
+- **DTO** → comunicação entre camadas
+- **Entity** → mapeamento JPA
+- **Enums**  → Permissões e classificação dos itens
+- **Infra** → Tratamento de Erros
+- **Configurations** → Info e definições JWT e configurações de documentação
+
+📌 Foco em:
+- Separação de responsabilidades
+- Código limpo
+- Escalabilidade
 
 ---
 
 ## 📂 Estrutura do projeto
-
-```text
 src/main/java/com/catholicFile/catholicFile
-├── Configurations
+├── configurations
 ├── controller
-├── DTOs
+├── dtos
 ├── entities
 ├── enums
 ├── infra
 ├── repositories
 ├── services
-├── usuarios
 
-
-
-```
-
----
 
 ## ⚙️ Como executar o projeto
 
 ### 1️⃣ Clonar o repositório
 
-```bash
 git clone https://github.com/RaissaMatosDev/catholicFile.git
-```
 
-### 2️⃣ Entrar na pasta
-
-```bash
+### 2️⃣ Acessar a pasta do projeto
 cd catholicFile
-```
-
-### 3️⃣ Rodar a aplicação
-
-```bash
+### 3️⃣ Executar a aplicação
 ./mvnw spring-boot:run
-```
 
-Ou execute pela sua IDE.
+Ou execute diretamente pela sua IDE.
 
----
+## 📄 Documentação da API
 
-## 🔮 Próximos passos (roadmap)
-```✅FEITO```
+Após rodar o projeto, acesse a documentação interativa via Swagger:
 
-* 🔲 Geração de PDF dos folhetos ✅
-* 🔲 Layout em duas colunas ✅
-* 🔲 Seções opcionais configuráveis ✅
-* 🔲 Autenticação JWT
-* 🔲 Frontend em Angular
-* 🔲 Deploy em nuvem
+http://localhost:8080/swagger-ui.html
+## ☁️ Deploy
 
----
+O deploy da aplicação será realizado na plataforma Render, permitindo acesso público à API para testes e demonstração do projeto em produção.
 
+## 🔮 Roadmap
+ Geração de PDF dos folhetos
+ Layout em duas colunas
+ Seções opcionais configuráveis
+ Autenticação com JWT
+ Frontend em Angular
+ Deploy em nuvem (Render)
 ## 👩‍💻 Autora
 
-**Raíssa Matos**
+Raíssa Matos
 Desenvolvedora Java Júnior
-Foco em desenvolvimento backend com Java e Spring.
+Foco em desenvolvimento backend com Java e Spring Boot
 
----
-
-## ⭐ Objetivo do projeto
-
-Este projeto faz parte do meu portfólio profissional, com foco em:
-
-* boas práticas com Spring
-* modelagem JPA
-* APIs REST
-* arquitetura em camadas
-* evolução incremental do sistema
-
----
-
-💡 Projeto em desenvolvimento contínuo.
+#
