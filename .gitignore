@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-application.properties
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -42,7 +42,7 @@ logs/
 .env.*
 application-local.properties
 application-dev.properties
-
+application.properties
 ### Security ###
 *.key
 *.pem
