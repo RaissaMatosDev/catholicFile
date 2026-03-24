@@ -1,6 +1,7 @@
 ### 📄 CatholicFile — Gerador de Folhetos de Cânticos
 API backend desenvolvida em Java 17 + Spring Boot para o gerenciamento e geração automatizada de folhetos litúrgicos. O sistema permite a montagem de folhetos com seções dinâmicas, ordenação inteligente e exportação direta para PDF, otimizada para celebrações religiosas.
 
+Link: https://catholicfile.onrender.com/swagger-ui/index.html
 ## 🚀 Tecnologias e Bibliotecas
 - Linguagem: Java 17.
 
@@ -88,6 +89,6 @@ Documentação: Acesse http://localhost:8080/swagger-ui.html para testar os endp
 
 [ ] Implementação do Frontend em Angular.
 
-[ ] Deploy automatizado na Render.
+[x] Deploy automatizado na Render.
 
 Autora: Raíssa Matos — Junior Java Backend Developer
