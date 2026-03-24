@@ -1,5 +1,5 @@
 
-FROM maven:3.8.1-amazoncorretto-17 AS build
+FROM maven:3.8.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 
@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 
-FROM amazoncorretto:17-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 
