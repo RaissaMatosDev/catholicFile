@@ -87,7 +87,7 @@ public class FolhetoController {
                 .body(folhetoSalvo);
     }
 
-    @PreAuthorize("hasAnyAuthority('USUARIO','ADMINISTRADOR')") // Padronizado para Authority
+    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority
     @Operation(summary = "Exclui um folheto pelo ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Folheto excluído com sucesso", content = @Content),

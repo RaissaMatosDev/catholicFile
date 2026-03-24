@@ -75,7 +75,7 @@ public class UsuarioController {
         return ResponseEntity.ok(atualizado);
     }
 
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Lista todos os usuários (Admin apenas)")
     @ApiResponses(value = {
@@ -90,7 +90,7 @@ public class UsuarioController {
         return ResponseEntity.ok(page);
     }
 
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Atualiza um usuário pelo ID")
     @ApiResponses(value = {
@@ -104,7 +104,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioAtualizado);
     }
 
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Exclui um usuário pelo ID")
     @ApiResponses(value = {
