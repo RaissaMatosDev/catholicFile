@@ -1,94 +1,128 @@
-### 📄 CatholicFile — Gerador de Folhetos de Cânticos
-API backend desenvolvida em Java 17 + Spring Boot para o gerenciamento e geração automatizada de folhetos litúrgicos. O sistema permite a montagem de folhetos com seções dinâmicas, ordenação inteligente e exportação direta para PDF, otimizada para celebrações religiosas.
+# 📄 CatholicFile — API de Automação de Folhetos Litúrgicos
 
-Link: https://catholicfile.onrender.com/swagger-ui/index.html
-## 🚀 Tecnologias e Bibliotecas
-- Linguagem: Java 17.
+O CatholicFile é uma API backend desenvolvida em Java 17 e Spring Boot para automatizar a criação de folhetos de cânticos utilizados em celebrações religiosas.
 
-- Framework: Spring Boot 3.
+Antes, todo o processo era manual, feito em editores de texto como Word, exigindo tempo, organização e atenção constante a detalhes. Como responsável por essa tarefa, desenvolvi esta solução de forma voluntária para reduzir o tempo de criação, padronizar os folhetos e eliminar erros manuais.
 
-- Persistência: Spring Data JPA & Hibernate.
+Atualmente, o sistema está em uso real, com potencial de expansão para outras comunidades.
 
-- Banco de Dados: PostgreSQL (Produção/Dev).
+---
 
-- Segurança: Spring Security & JWT (JSON Web Token).
+## 🚀 Testar a API (Online)
+
+A aplicação está disponível em produção.
+
+👉 Acesse diretamente:
+https://catholicfile.onrender.com/swagger-ui/index.html
+
+⚠️ Observação:
+- Pode levar alguns segundos para responder na primeira requisição (cold start do Render)
+
+---
+
+## 💡 Problema Resolvido
+
+A criação de folhetos litúrgicos envolve:
+
+- Montagem manual de conteúdo
+- Repetição de estruturas
+- Alto risco de erros de formatação
+- Tempo elevado de preparação
+
+👉 O CatholicFile automatiza esse processo, permitindo gerar folhetos completos em poucos minutos.
+
+---
+
+## ⚙️ Solução Implementada
+
+- Criação independente de seções reutilizáveis
+- Associação de seções a múltiplos folhetos
+- Ordenação automática baseada em regras litúrgicas (Enum)
+- Geração dinâmica de PDF com layout pronto para impressão (duas colunas)
+- Filtros avançados e paginação para escalabilidade
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- Java 17
+- Spring Boot 3
+- Spring Security + JWT
+- Spring Data JPA / Hibernate
+- PostgreSQL
+- Thymeleaf
+- OpenHTMLtoPDF
+- Swagger (OpenAPI 3)
+
+---
+
+## 🔐 Segurança
+
+- Autenticação baseada em JWT
+- Controle de acesso por roles (RBAC)
+- Apenas administradores podem:
+  - Criar outros administradores
+  - Acessar endpoints sensíveis
+
+---
+
+## 🧠 Arquitetura
+
+A aplicação segue arquitetura em camadas e princípios SOLID:
+
+- **Controller** → endpoints REST  
+- **Service** → regras de negócio  
+- **Repository** → acesso a dados  
+- **DTO** → transporte seguro  
+- **Infra** → segurança e tratamento de exceções  
+- ++
+---
+
+## 📂 Estrutura do Projeto
 
 
-- Geração de PDF: OpenHTMLtoPDF (baseado em Flying Saucer) com suporte a CSS3 e Fast-mode.
-
-- Template Engine: Thymeleaf (para renderização dinâmica de HTML para PDF).
-
-- Documentação: Swagger (OpenAPI 3).
-
-## 📌 Funcionalidades Implementadas
-# 📄 Gestão de Folhetos & PDF
-
-- Geração de PDF Dinâmico: Exportação de folhetos em formato PDF 1.7.
-
-- Ordenação Inteligente: As seções do folheto são ordenadas automaticamente com base no ordinal() do Enum (ex: Entrada, Salmo, Ofertório).
-
-- Vínculo Relacional: Gerenciamento de seções vinculadas a folhetos específicos com suporte a operações em cascata corrigidas via Hibernate.
-
-# 🧩 Seções & Filtros Avançados
-- Busca Global: Filtro por palavra-chave em títulos e conteúdos.
-
-- Filtros Litúrgicos: Filtragem refinada por Tipo de Seção e Tempo Litúrgico (Advento, Quaresma, Páscoa, etc.).
-
-- Paginação: Listagem paginada e eficiente de todas as seções.
-
-# 🔐 Segurança & Infraestrutura
-- Autenticação JWT: Sistema de login com Roles e Tokens de acesso.
-
-- Tratamento de Erros: Exceções customizadas (RecursoNaoEncontradoException) e respostas HTTP padronizadas.
-
-- Prevenção de Recursão: Uso de @JsonIgnore para evitar loops infinitos em relacionamentos Bidirecionais.
-
-# 🧠 Arquitetura do Projeto
-O projeto segue os princípios SOLID e uma arquitetura em camadas para garantir manutenibilidade:
-
-- Controller: Exposição dos endpoints REST e documentação Swagger.
-
-- Service: Camada de regras de negócio, ordenação de listas e lógica de geração de PDF.
-
-- Repository: Consultas otimizadas com JPQL para filtros opcionais.
-
-- DTO (Data Transfer Object): Tráfego de dados seguro, evitando a exposição direta das entidades.
-
-- Infra: Configurações de segurança, CORS e manipuladores de erros globais.
-
-## 📂 Estrutura de Pastas
-Plaintext
 src/main/java/com/catholicfile/catholicfile
-├── configurations  # Configurações de Beans e Swagger
-├── controller      # Endpoints da API
-├── dtos            # Objetos de transferência de dados
-├── entities        # Modelos de dados (JPA)
-├── enums           # Tipagem (TempoLit, TipoSecao, UserRole)
-├── infra           # Segurança e Tratamento de Exceções
-├── repositories    # Interfaces de comunicação com o DB
-└── services        # Lógica de negócio e PDF
-## ⚙️ Como Executar
-Clonar:
+├── configurations
+├── controller
+├── dtos
+├── entities
+├── enums
+├── infra
+├── repositories
+└── services
 
-Bash
-git clone https://github.com/RaissaMatosDev/catholicFile.git
-Configurar Banco: Certifique-se de que o PostgreSQL está rodando e ajuste o application.properties com suas credenciais.
 
-## Rodar:
+---
 
-Bash
-./mvnw spring-boot:run
-Documentação: Acesse http://localhost:8080/swagger-ui.html para testar os endpoints.
+## 📸 Documentação da API
 
-## 🔮 Roadmap Atualizado
-[x] Geração de PDF com OpenHTMLtoPDF.
+![WhatsApp Image 2026-03-24 at 15 05 05](https://github.com/user-attachments/assets/8abb6ae0-ce6b-4b00-a025-97a4a7dee72d)
+![WhatsApp Image 2026-03-24 at 15 06 25](https://github.com/user-attachments/assets/2717a673-4d03-406c-bd54-71f65761a1c3)
+![WhatsApp Image 2026-03-24 at 21 12 35](https://github.com/user-attachments/assets/205481da-a204-4871-9fa9-ce7661156773)
 
-[x] Filtros dinâmicos por Enum.
+---
 
-[x] Layout do PDF em duas colunas (estilo folheto de missa).
+## 🎯 Impacto
 
-[ ] Implementação do Frontend em Angular.
+- Redução significativa no tempo de criação de folhetos  
+- Eliminação de erros manuais  
+- Padronização de documentos  
+- Uso real em ambiente produtivo  
 
-[x] Deploy automatizado na Render.
+---
 
-Autora: Raíssa Matos — Junior Java Backend Developer
+## 🔮 Roadmap
+
+- [ ] Desenvolvimento de frontend (Angular)
+- [ ] Testes automatizados
+- [ ] Migração para infraestrutura paga
+- [ ] Melhorias na performance do PDF
+
+---
+
+## 👩‍💻 Autora
+
+Raíssa Matos  
+Desenvolvedora Backend Java  
+
+Projeto desenvolvido de forma voluntária com foco em resolver problemas reais.
