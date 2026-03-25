@@ -32,42 +32,37 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Ignora endpoints públicos inclusive o da documentação
         String path = request.getRequestURI();
-        if (path.startsWith("/v3/api-docs") ||
-            path.startsWith("/swagger-ui") ||
-            path.equals("/usuarios") ||
-            path.equals("/usuarios/login")) {
+
+        // ignora endpoints publicos
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui") ||
+                path.equals("/usuarios") || path.equals("/usuarios/login")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String authHeader = request.getHeader("Authorization");
 
+        //verifica token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+            try {
+                if (jwtUtil.validarToken(token)) {
+                    String email = jwtUtil.extrairEmail(token);
 
-
-            if (jwtUtil.validarToken(token)) {
-                String email = jwtUtil.extrairEmail(token);
-
-                Usuario usuario = usuarioRepository.findByEmail(email)
-                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                usuario,
-                                null,
-                                usuario.getAuthorities()
-                        );
-
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    // Busca o usuário e autentica
+                    usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                                usuario, null, usuario.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    });
+                }
+            } catch (Exception e) {
+                // Se der erro no token, limpa o contexto para garantir o 401 correto
+                SecurityContextHolder.clearContext();
             }
         }
 
-        // Se não tiver token válido, o Spring vai tratar a requisição conforme o SecurityChain
         filterChain.doFilter(request, response);
     }
 }
