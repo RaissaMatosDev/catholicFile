@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -60,11 +61,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/usuarios/login", "/usuarios").permitAll()
+
+
+                        .requestMatchers(HttpMethod.GET, "/folheto/*/pdf").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_USUARIO")
+
                         .anyRequest().authenticated()
                 )
-
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // Trata o 401 (Token)
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
