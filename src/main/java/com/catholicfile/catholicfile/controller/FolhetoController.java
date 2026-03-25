@@ -40,7 +40,7 @@ public class FolhetoController {
         this.folhetoService = folhetoService;
     }
 
-    @PreAuthorize("hasAnyAuthority('USUARIO','ADMINISTRADOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USUARIO','ROLE_ADMINISTRADOR')")
     @Operation(summary = "Gera PDF de um folheto pelo ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso", content = @Content(mediaType = "application/pdf")),
