@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-//Este é o "porteiro' de acesso, verifica todas as
-// credencias e permite o login e as solicitações http
+import java.util.Optional;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -31,36 +30,59 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("=== JWT DEBUG ===");
+        System.out.println("PATH: " + request.getRequestURI());
+        System.out.println("AUTH HEADER: " + request.getHeader("Authorization"));
 
         String path = request.getRequestURI();
 
-        // ignora endpoints publicos
-        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui") ||
-                path.equals("/usuarios") || path.equals("/usuarios/login")) {
+
+        if (path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui") ||
+                path.equals("/usuarios") ||
+                path.equals("/usuarios/login") ||
+                path.contains("/pdf") ||
+                path.startsWith("/error")) {
+
             filterChain.doFilter(request, response);
             return;
         }
 
         String authHeader = request.getHeader("Authorization");
 
-        //verifica token
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            try {
-                if (jwtUtil.validarToken(token)) {
-                    String email = jwtUtil.extrairEmail(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                    // Busca o usuário e autentica
-                    usuarioRepository.findByEmail(email).ifPresent(usuario -> {
-                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                                usuario, null, usuario.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(auth);
-                    });
+        String token = authHeader.substring(7);
+
+        try {
+            if (jwtUtil.validarToken(token)) {
+
+                String email = jwtUtil.extrairEmail(token);
+
+                Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+                if (usuarioOpt.isPresent()) {
+                    Usuario usuario = usuarioOpt.get();
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    usuario,
+                                    null,
+                                    usuario.getAuthorities()
+                            );
+
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (Exception e) {
-                // Se der erro no token, limpa o contexto para garantir o 401 correto
-                SecurityContextHolder.clearContext();
             }
+        } catch (Exception e) {
+            System.out.println("=== ERRO JWT ===");
+            e.printStackTrace();
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

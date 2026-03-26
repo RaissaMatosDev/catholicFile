@@ -32,7 +32,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(usuario.getEmail())
-                .claim("roles", roles) // <--- Adiciona as permissões no corpo do Token
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
