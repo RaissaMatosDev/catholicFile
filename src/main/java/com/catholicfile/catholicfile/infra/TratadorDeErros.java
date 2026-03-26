@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 public class TratadorDeErros {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErroResposta> tratarErroDuplicidade(
+    public ResponseEntity<ErroDTO> tratarErroDuplicidade(
             DataIntegrityViolationException ex,
             HttpServletRequest request) {
 
-        ErroResposta erro = new ErroResposta(
+        ErroDTO erro = new ErroDTO(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 "CONFLICT",
@@ -29,10 +29,10 @@ public class TratadorDeErros {
     }
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
-    public ResponseEntity<ErroResposta> tratarNaoEncontrado(
+    public ResponseEntity<ErroDTO> tratarNaoEncontrado(
             RecursoNaoEncontradoException ex,
             HttpServletRequest request) {
-        ErroResposta erro = new ErroResposta(
+        ErroDTO erro = new ErroDTO(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "NOT_FOUND",
@@ -44,22 +44,23 @@ public class TratadorDeErros {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErroDTO> tratarResponsestatus(ResponseStatusException ex) {
+    public ResponseEntity<ErroDTO> tratarResponsestatus(ResponseStatusException ex, HttpServletRequest request) {
         ErroDTO erro = new ErroDTO(
+                LocalDateTime.now(),
                 ex.getStatusCode().value(),
+                ex.getStatusCode().toString(),
                 ex.getReason(),
-                LocalDateTime.now()
+                request.getRequestURI()
         );
-
         return ResponseEntity.status(ex.getStatusCode()).body(erro);
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ErroResposta> tratarErroAcessoNegado(
+    public ResponseEntity<ErroDTO> tratarErroAcessoNegado(
             org.springframework.security.access.AccessDeniedException ex,
             HttpServletRequest request) {
 
-        ErroResposta erro = new ErroResposta(
+        ErroDTO erro = new ErroDTO(
                 LocalDateTime.now(),
                 HttpStatus.FORBIDDEN.value(),
                 "FORBIDDEN",
@@ -70,4 +71,16 @@ public class TratadorDeErros {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(erro);
     }
 
-}
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErroDTO> handleNullPointer(NullPointerException ex, HttpServletRequest request) {
+        ErroDTO erro = new ErroDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
+                "Seção inválida: tipo não pode ser nulo.",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    }
