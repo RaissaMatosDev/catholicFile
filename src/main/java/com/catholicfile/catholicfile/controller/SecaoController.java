@@ -38,18 +38,7 @@ public class SecaoController {
         this.secaoService = secaoService;
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
-    @Operation(summary = "Lista todas as seções de um folheto pelo ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Seções listadas com sucesso"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<List<SecaoFolhetoDTO>> listarSecoes(@PathVariable Long id) {
-        List<SecaoFolhetoDTO> secoes = secaoService.buscarSecoesPorFolheto(id);
-        return ResponseEntity.ok(secoes);
-    }
+
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
     @Operation(summary = "Filtra seções por palavra, tipo ou tempo litúrgico")
@@ -96,7 +85,7 @@ public class SecaoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
             @ApiResponse(responseCode = "404", description = "Seção não encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/atualizar")
     public ResponseEntity<SecaoFolheto> atualizar(
             @PathVariable Long id,
             @RequestBody SecaoFolhetoDTO dto) {

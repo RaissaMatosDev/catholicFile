@@ -12,10 +12,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface SecaoRepository extends JpaRepository<SecaoFolheto, Long> {
-    List<SecaoFolheto> findByFolhetoId(Long folhetoId);
 
-    Optional<SecaoFolheto> findByFolhetoIdAndTipo(Long folhetoId, TipoSecao tipo);
+public interface SecaoRepository extends JpaRepository<SecaoFolheto, Long> {
+        Optional<SecaoFolheto> findById(Long id);
+
+        List<SecaoFolheto> findByFolhetos_Id(Long folhetoId);
 
     @Query("""
     SELECT s FROM SecaoFolheto s
@@ -31,4 +32,6 @@ public interface SecaoRepository extends JpaRepository<SecaoFolheto, Long> {
             @Param("lit") TempoLit lit,
             Pageable pageable
     );
+
+
 }

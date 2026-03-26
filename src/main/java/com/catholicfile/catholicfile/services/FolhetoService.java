@@ -1,6 +1,7 @@
 package com.catholicfile.catholicfile.services;
 
 import com.catholicfile.catholicfile.dtos.FolhetoDTO;
+import com.catholicfile.catholicfile.dtos.SecaoFolhetoDTO;
 import com.catholicfile.catholicfile.entities.Folheto;
 import com.catholicfile.catholicfile.entities.SecaoFolheto;
 import com.catholicfile.catholicfile.enums.TipoSecao;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -91,11 +93,11 @@ public class FolhetoService {
         }
         folhetoRepository.deleteById(id);
     }
-    @Transactional(readOnly = true) // Use readOnly para melhorar a performance em geração de arquivos
+    @Transactional(readOnly = true)
     public byte[] gerarPdf(Long folhetoId) throws Exception {
 
         Folheto folheto = folhetoRepository.findById(folhetoId)
-                .orElseThrow(() -> new RuntimeException("Folheto não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Folheto não encontrado"));
 
         List<SecaoFolheto> secoesOrdenadas = folheto.getSecoes()
                 .stream()
@@ -131,5 +133,16 @@ public class FolhetoService {
                                 .map(SecaoFolheto::getId)
                                 .toList()
                 ));
+    }
+    /**
+     * Busca todas as seções de um folheto, ordenadas pelo TipoSecao
+     */
+    public List<SecaoFolhetoDTO> buscarSecoesPorFolheto(Long folhetoId) {
+        List<SecaoFolheto> secoes = secaoRepository.findByFolhetos_Id(folhetoId);
+        secoes.sort(Comparator.comparing(s -> s.getTipo().ordinal()));
+
+        return secoes.stream()
+                .map(SecaoFolhetoDTO::new)
+                .toList();
     }
 }

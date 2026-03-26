@@ -5,11 +5,11 @@ import com.catholicfile.catholicfile.configurations.SecurityConfigurations;
 import com.catholicfile.catholicfile.dtos.ErroDTO;
 import com.catholicfile.catholicfile.dtos.FolhetoDTO;
 import com.catholicfile.catholicfile.dtos.PageResponseDTO;
+import com.catholicfile.catholicfile.dtos.SecaoFolhetoDTO;
 import com.catholicfile.catholicfile.infra.RecursoNaoEncontradoException;
 import com.catholicfile.catholicfile.services.FolhetoService;
+import com.catholicfile.catholicfile.services.SecaoService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 
 @RestController
@@ -35,12 +36,15 @@ import java.net.URI;
 public class FolhetoController {
 
     private final FolhetoService folhetoService;
+    private final SecaoService secaoService;
 
-    public FolhetoController(FolhetoService folhetoService) {
+
+    public FolhetoController(FolhetoService folhetoService, SecaoService secaoService) {
         this.folhetoService = folhetoService;
+        this.secaoService = secaoService;
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+
     @Operation(summary = "Gera PDF de um folheto pelo ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso", content = @Content(mediaType = "application/pdf")),
@@ -55,6 +59,21 @@ public class FolhetoController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=folheto.pdf")
                 .body(pdf);
+    }
+    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @Operation(summary = "Lista todas as seções de um folheto pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Seções listadas com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<List<SecaoFolhetoDTO>> listarSecoes(@PathVariable Long id) {
+        List<SecaoFolhetoDTO> secoes = folhetoService.buscarSecoesPorFolheto(id);
+        if (secoes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(secoes);
     }
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority

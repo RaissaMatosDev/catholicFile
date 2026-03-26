@@ -25,17 +25,7 @@ public class SecaoService {
         this.repository = repository;
     }
 
-    /**
-     * Busca todas as seções de um folheto, ordenadas pelo TipoSecao
-     */
-    public List<SecaoFolhetoDTO> buscarSecoesPorFolheto(Long folhetoId) {
-        List<SecaoFolheto> secoes = repository.findByFolhetoId(folhetoId);
-        secoes.sort(Comparator.comparing(s -> s.getTipo().ordinal()));
 
-        return secoes.stream()
-                .map(SecaoFolhetoDTO::new)
-                .toList();
-    }
 
     /**
      * Filtra seções por palavra, tipo e tempo litúrgico
