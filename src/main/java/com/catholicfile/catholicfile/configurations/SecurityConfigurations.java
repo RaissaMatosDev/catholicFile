@@ -61,9 +61,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/usuarios/login", "/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/folheto/*/pdf").permitAll()
 
-
-                        .requestMatchers(HttpMethod.GET, "/folheto/{id}/pdf")).hasAnyRole("ADMINISTRADOR", "USUARIO")
 
                         .anyRequest().authenticated()
                 )
