@@ -63,7 +63,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                         .requestMatchers("/usuarios/login", "/usuarios").permitAll()
 
 
-                        .requestMatchers(HttpMethod.GET, "/folheto/*/pdf").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_USUARIO")
+                        .requestMatchers(HttpMethod.GET, "/folheto/{id}/pdf")).hasAnyRole("ADMINISTRADOR", "USUARIO")
 
                         .anyRequest().authenticated()
                 )
