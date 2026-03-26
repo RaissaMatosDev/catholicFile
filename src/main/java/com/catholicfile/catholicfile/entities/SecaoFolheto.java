@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 //Esta entidade é registrada no banco na tabela secao folhetos,
 // e utiliza relacionamento ManytoOne em relação a folheto
@@ -28,7 +31,7 @@ public class SecaoFolheto {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo")
+    @Column(name = "tipo",nullable = false)
     private TipoSecao tipo;
 
     @Enumerated(EnumType.STRING)
@@ -42,10 +45,10 @@ public class SecaoFolheto {
     @Column(columnDefinition = "TEXT")
     private String conteudo;
 
-    @ManyToOne
-    @JoinColumn(name = "folheto_id", nullable = true)
+
+    @ManyToMany(mappedBy = "secoes")
     @JsonIgnore
-    private Folheto folheto;
+    private List<Folheto> folhetos = new ArrayList<>();
 
 
     public SecaoFolheto(SecaoFolhetoDTO dto){

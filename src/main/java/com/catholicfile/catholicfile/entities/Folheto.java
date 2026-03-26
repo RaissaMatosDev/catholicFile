@@ -27,15 +27,17 @@ public class Folheto {
     private TempoLit lit;
 
 
-    @OneToMany(mappedBy = "folheto",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "folheto_secoes", // Nome da nova tabela de ligação
+            joinColumns = @JoinColumn(name = "folheto_id"),
+            inverseJoinColumns = @JoinColumn(name = "secao_id")
+    )
     private List<SecaoFolheto> secoes = new ArrayList<>();
 
     public void adicionarSecao(SecaoFolheto secao){
-        secao.setFolheto(this);
         this.secoes.add(secao);
+
     }
 }
 
