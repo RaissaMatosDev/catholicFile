@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -75,11 +76,29 @@ public class TratadorDeErros {
     public ResponseEntity<ErroDTO> handleNullPointer(NullPointerException ex, HttpServletRequest request) {
         ErroDTO erro = new ErroDTO(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "BAD_REQUEST",
-                "Seção inválida: tipo não pode ser nulo.",
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "INTERNAL_SERVER_ERROR",
+                ex.getMessage(),
                 request.getRequestURI()
         );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+    }
+//Se algum campo do DTO estiver invalido, retorna a mensagem correta sem gambiarras
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErroDTO> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String mensagens = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .reduce("", (a,b) -> a + b + "; ");
+
+        ErroDTO erro = new ErroDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
+                mensagens,
+                request.getRequestURI()
+        );
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 
