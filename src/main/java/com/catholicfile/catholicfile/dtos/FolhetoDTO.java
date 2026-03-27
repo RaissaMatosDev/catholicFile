@@ -20,7 +20,7 @@ public record FolhetoDTO(
         @NotNull TempoLit lit,
 
         @Schema(description = "IDs das seções que compõem o folheto", example = "[36,38,39]")
-        @NotNull List<Long> secoesIds
+        @NotNull List<SecaoFolhetoDTO> secoesIds
 ) {
 
     public FolhetoDTO(Folheto folheto) {
@@ -29,9 +29,9 @@ public record FolhetoDTO(
                     folheto.getId(),
                     folheto.getTitulo(),
                     folheto.getLit(),
-                    folheto.getSecoes()          // List<Secao>
+                    folheto.getSecoes()
                             .stream()
-                            .map(SecaoFolheto::getId)   // pegar o ID de cada Secao
+                            .map(SecaoFolhetoDTO::new)
                             .toList()
         );
         }

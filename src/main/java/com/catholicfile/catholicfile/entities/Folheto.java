@@ -6,6 +6,7 @@ import com.catholicfile.catholicfile.enums.TempoLit;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.*;
 
@@ -39,5 +40,6 @@ public class Folheto {
         this.secoes.add(secao);
 
     }
+
 }
 

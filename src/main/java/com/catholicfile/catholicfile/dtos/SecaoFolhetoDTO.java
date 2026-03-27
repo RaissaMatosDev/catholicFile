@@ -8,6 +8,10 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Informações de uma seção folheto")
 public record SecaoFolhetoDTO(
+
+        @Schema(description = "Id da Seção (gerado automaticamente)")
+        Long id,
+
         @Schema(description = "Tipo da seção", example = "ENTRADA")
         @NotNull TipoSecao tipo,
 
@@ -22,11 +26,14 @@ public record SecaoFolhetoDTO(
 ) {
     public SecaoFolhetoDTO(SecaoFolheto secao) {
         this(
+                secao.getId(),
                 secao.getTipo(),
                 secao.getConteudo(),
                 secao.getLit(),
-                secao.getTitulo());
+                secao.getTitulo()
+        );
+    }
 
 }
-}
+
 

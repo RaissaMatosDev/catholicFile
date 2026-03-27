@@ -45,7 +45,7 @@ public class FolhetoController {
     }
 
 
-    @Operation(summary = "Gera PDF de um folheto pelo ID")
+    @Operation(summary = "Gera PDF de um folheto pelo ID", security = {})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso", content = @Content(mediaType = "application/pdf")),
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
@@ -67,13 +67,24 @@ public class FolhetoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
             @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/secoes")
     public ResponseEntity<List<SecaoFolhetoDTO>> listarSecoes(@PathVariable Long id) {
         List<SecaoFolhetoDTO> secoes = folhetoService.buscarSecoesPorFolheto(id);
         if (secoes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(secoes);
+    }
+    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @Operation(summary = "Busca folheto por Seção")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Folheto foi retornado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<FolhetoDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(folhetoService.buscarPorId(id));
     }
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority

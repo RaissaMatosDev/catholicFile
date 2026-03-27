@@ -39,13 +39,13 @@ public class FolhetoService {
         this.secaoRepository = secaoRepository;
     }
 
-    private void validarIds(List<Long> ids) throws RecursoNaoEncontradoException {
+    private void validarIds(List<SecaoFolhetoDTO> ids) throws RecursoNaoEncontradoException {
 
         if (ids == null || ids.isEmpty()) {
             throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "O folheto precisa ter seções.");
         }
 
-        Set<Long> unicos = new HashSet<>(ids);
+        Set<SecaoFolhetoDTO> unicos = new HashSet<>(ids);
 
         if (unicos.size() != ids.size()) {
             throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Não pode repetir seção.");
@@ -67,9 +67,14 @@ public class FolhetoService {
 
         validarIds(dto.secoesIds());
 
-        List<SecaoFolheto> secoes = secaoRepository.findAllById(dto.secoesIds());
+        List<Long> ids = dto.secoesIds()
+                .stream()
+                .map(SecaoFolhetoDTO::id)
+                .toList();
 
-        if (secoes.size() != dto.secoesIds().size()) {
+        List<SecaoFolheto> secoes = secaoRepository.findAllById(ids);
+
+        if (secoes.size() != ids.size()) {
             throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Uma ou mais seções não existem.");
         }
 
@@ -130,7 +135,7 @@ public class FolhetoService {
                         folheto.getTitulo(),
                         folheto.getLit(),
                         folheto.getSecoes().stream()
-                                .map(SecaoFolheto::getId)
+                                .map(SecaoFolhetoDTO::new)
                                 .toList()
                 ));
     }
@@ -144,5 +149,32 @@ public class FolhetoService {
         return secoes.stream()
                 .map(SecaoFolhetoDTO::new)
                 .toList();
+    }
+    private SecaoFolhetoDTO mapSecao(SecaoFolheto secao) {
+        return new SecaoFolhetoDTO(
+                secao.getId(),
+                secao.getTipo(),
+                secao.getConteudo(),
+                secao.getLit(),
+                secao.getTitulo()
+        );
+    }
+
+    private FolhetoDTO toDTO(Folheto folheto) {
+        return new FolhetoDTO(
+                folheto.getId(),
+                folheto.getTitulo(),
+                folheto.getLit(),
+                folheto.getSecoes()
+                        .stream()
+                        .map(this::mapSecao)
+                        .toList()
+        );
+    }
+    public FolhetoDTO buscarPorId(Long id) {
+        Folheto folheto = folhetoRepository.buscarComSecoes(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND,"Folheto não encontrado"));
+
+        return toDTO(folheto);
     }
 }

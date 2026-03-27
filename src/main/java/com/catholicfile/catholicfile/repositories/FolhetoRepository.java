@@ -10,5 +10,8 @@ import java.util.Optional;
 public interface FolhetoRepository extends JpaRepository<Folheto, Long> {
     @Query("SELECT f FROM Folheto f LEFT JOIN FETCH f.secoes WHERE f.id = :id")
     Optional<Folheto> findByIdComSecoes(@Param("id") Long id);
+
+    @Query("SELECT f FROM Folheto f JOIN FETCH f.secoes WHERE f.id = :id")
+    Optional<Folheto> buscarComSecoes(@Param("id") Long id);
 }
 
