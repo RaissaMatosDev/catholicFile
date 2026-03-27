@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -40,6 +41,7 @@ public class SecaoController {
 
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Filtra seções por palavra, tipo ou tempo litúrgico")
     @Parameters({
             @Parameter(name = "palavra", description = "Palavra-chave para busca", example = "glória"),
@@ -47,9 +49,51 @@ public class SecaoController {
             @Parameter(name = "lit", description = "Tempo litúrgico", example = "QUARESMA")
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Seções filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Seções filtradas com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageResponseDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parâmetros inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Filtro",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "mensagem": "Parâmetro de busca 'nome' contém caracteres inválidos",
+                  "path": "/secao/filtro"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Sem Permissão de Leitura",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Token inválido ou sem permissão para listar seções",
+                  "path": "/secao/filtro"
+                }
+                """
+                            )
+                    )
+            )
     })
     @GetMapping("/filtrar")
     public ResponseEntity<PageResponseDTO<SecaoFolhetoDTO>> filtrar(
@@ -63,12 +107,74 @@ public class SecaoController {
     }
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Cria uma nova seção")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Seção criada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SecaoFolhetoDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Recurso relacionado não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Seção criada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = SecaoFolhetoDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "mensagem": "O conteúdo da seção não pode exceder o limite de caracteres",
+                  "path": "/secao"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Sem Permissão",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem permissão para criar novas seções",
+                  "path": "/secao"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recurso relacionado não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Folheto ou Categoria não existe",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi possível vincular: recurso pai não encontrado",
+                  "path": "/secao"
+                }
+                """
+                            )
+                    )
+            )
     })
     @PostMapping
     public ResponseEntity<SecaoFolheto> criar(@RequestBody SecaoFolhetoDTO dto) {
@@ -76,29 +182,134 @@ public class SecaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novaSecao);
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Atualiza uma seção pelo ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Seção atualizada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SecaoFolhetoDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Seção não encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Seção atualizada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = SecaoFolhetoDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "mensagem": "O campo 'titulo' da seção não pode exceder 100 caracteres",
+                  "path": "/secao/1"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Sem Permissão de Escrita",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem autorização para editar esta seção",
+                  "path": "/secao/1"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Seção não encontrada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Seção Inexistente",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi possível atualizar: Seção com ID 1 não encontrada",
+                  "path": "/secao/1"
+                }
+                """
+                            )
+                    )
+            )
     })
     @PutMapping("/{id}/atualizar")
-    public ResponseEntity<SecaoFolheto> atualizar(
+    public ResponseEntity<SecaoFolhetoDTO> atualizar(
             @PathVariable Long id,
             @RequestBody SecaoFolhetoDTO dto) {
 
         SecaoFolheto secaoAtualizada = secaoService.atualizar(id, dto);
-        return ResponseEntity.ok(secaoAtualizada);
+        return ResponseEntity.ok(new SecaoFolhetoDTO(secaoAtualizada));
     }
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')") // Apenas Admin pode excluir
-    @Operation(summary = "Exclui uma seção pelo ID")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
+    @Operation(summary = "Exclui uma seção pelo ID", security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Seção excluída com sucesso", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Seção não encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Seção excluída com sucesso",
+                    content = @Content // No Content não retorna corpo
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Permissão Negada",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não possui privilégios para excluir esta seção",
+                  "path": "/secao/1"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Seção não encontrada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Seção Inexistente",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi possível excluir: Seção com ID 1 não encontrada",
+                  "path": "/secao/1"
+                }
+                """
+                            )
+                    )
+            )
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
