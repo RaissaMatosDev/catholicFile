@@ -76,7 +76,7 @@ public class FolhetoController {
         return ResponseEntity.ok(secoes);
     }
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
-    @Operation(summary = "Busca folheto por Seção")
+    @Operation(summary = "Busca folheto por Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Folheto foi retornado com sucesso"),
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
