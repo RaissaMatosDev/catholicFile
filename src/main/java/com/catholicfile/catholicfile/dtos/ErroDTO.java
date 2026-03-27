@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 public record ErroDTO (
+
         @Schema(example = "2026-03-26T19:33:00")
         LocalDateTime timestamp,
 
