@@ -3,9 +3,9 @@ package com.catholicfile.catholicfile.dtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record LoginRequestDTO(
-        @Schema(description = "Email", example = "Raissa@hotmail.com")
+        @Schema(description = "Email", example = "administrador@teste.com")
         String email,
 
-        @Schema(description = "Senha", example = "gatoFeio123")
+        @Schema(description = "Senha", example = "12345678")
         String senha
 ) {}
