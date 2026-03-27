@@ -10,7 +10,9 @@ import com.catholicfile.catholicfile.infra.RecursoNaoEncontradoException;
 import com.catholicfile.catholicfile.services.FolhetoService;
 import com.catholicfile.catholicfile.services.SecaoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -44,13 +46,75 @@ public class FolhetoController {
         this.secaoService = secaoService;
     }
 
-
-    @Operation(summary = "Gera PDF de um folheto pelo ID", security = {})
+    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
+    @Operation(summary = "Gera PDF de um folheto pelo ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso", content = @Content(mediaType = "application/pdf")),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "PDF gerado com sucesso",
+                    content = @Content(mediaType = "application/pdf")
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Permissão",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem permissão para gerar PDFs deste folheto",
+                  "path": "/folheto/1/pdf"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Folheto não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Folheto Inexistente",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi possível gerar o PDF pois o folheto ID 1 não existe",
+                  "path": "/folheto/1/pdf"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno no servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro na Geração do PDF",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 500,
+                  "error": "Internal Server Error",
+                  "mensagem": "Falha técnica ao processar o arquivo PDF",
+                  "path": "/folheto/1/pdf"
+                }
+                """
+                            )
+                    )
+            )
     })
     @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> gerarPdf(@PathVariable Long id) throws Exception {
@@ -61,11 +125,57 @@ public class FolhetoController {
                 .body(pdf);
     }
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Lista todas as seções de um folheto pelo ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Seções listadas com sucesso"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Seções listadas com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SecaoFolhetoDTO.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Permissão",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem permissão para visualizar as seções deste folheto",
+                  "path": "/folheto/1/secoes"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Folheto não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Folheto Inexistente",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi possível listar seções pois o folheto informado não existe",
+                  "path": "/folheto/99/secoes"
+                }
+                """
+                            )
+                    )
+            )
     })
     @GetMapping("/{id}/secoes")
     public ResponseEntity<List<SecaoFolhetoDTO>> listarSecoes(@PathVariable Long id) {
@@ -76,11 +186,54 @@ public class FolhetoController {
         return ResponseEntity.ok(secoes);
     }
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Busca folheto por Id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Folheto foi retornado com sucesso"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Folheto foi retornado com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = FolhetoDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Permissão",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem autorização para visualizar este folheto",
+                  "path": "/folheto/1"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Folheto não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Folheto Inexistente",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Não foi encontrado nenhum folheto com o ID informado",
+                  "path": "/folheto/1"
+                }
+                """
+                            )
+                    )
+            )
     })
     @GetMapping("/{id}")
     public ResponseEntity<FolhetoDTO> buscar(@PathVariable Long id) {
@@ -88,25 +241,166 @@ public class FolhetoController {
     }
 
     @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Lista todos os folhetos paginados")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista retornada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageResponseDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parâmetros inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Ordenação",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "mensagem": "Propriedade de ordenação inválida: 'campoInexistente'",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Autenticação",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Token expirado ou sem permissão de leitura",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro Inesperado",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 500,
+                  "error": "Internal Server Error",
+                  "mensagem": "Ocorreu um erro inesperado ao processar a lista",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            )
     })
     @GetMapping
     public Page<FolhetoDTO> listar(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         return folhetoService.listar(pageable);
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority
+    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Cadastra um novo folheto")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Folheto criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FolhetoDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Uma ou mais seções não existem", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Folheto cadastrado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = FolhetoDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Exemplo de Cadastro",
+                                    value = """
+                {
+                  "titulo": "Missa de Domingo",
+                  "lit": "TEMPO_COMUM",
+                  "secoesIds": [
+                    { "id": 1 },
+                    { "id": 2 },
+                    { "id": 3 }
+                  ]
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Validação",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "mensagem": "O campo 'titulo' não pode estar vazio",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Erro de Permissão",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem permissão para cadastrar folhetos",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Uma ou mais seções não existem",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Seção não encontrada",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Uma ou mais seções informadas nos IDs não foram encontradas no banco de dados",
+                  "path": "/folheto"
+                }
+                """
+                            )
+                    )
+            )
     })
     @PostMapping
     public ResponseEntity<FolhetoDTO> cadastrarFolheto(@RequestBody @Valid FolhetoDTO dados)
@@ -117,12 +411,55 @@ public class FolhetoController {
                 .body(folhetoSalvo);
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO','ADMINISTRADOR')") // Padronizado para Authority
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
     @Operation(summary = "Exclui um folheto pelo ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Folheto excluído com sucesso", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Folheto não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Folheto excluído com sucesso",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Exemplo de Acesso Negado",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 403,
+                  "error": "Forbidden",
+                  "mensagem": "Você não tem permissão para excluir este recurso.",
+                  "path": "/folheto/1"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Folheto não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErroDTO.class),
+                            examples = @ExampleObject(
+                                    name = "Exemplo de Recurso Não Encontrado",
+                                    value = """
+                {
+                  "timestamp": "2026-03-27T12:00:00Z",
+                  "status": 404,
+                  "error": "Not Found",
+                  "mensagem": "Folheto com ID 1 não encontrado.",
+                  "path": "/folheto/1"
+                }
+                """
+                            )
+                    )
+            )
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirFolheto(@PathVariable Long id) throws RecursoNaoEncontradoException {
