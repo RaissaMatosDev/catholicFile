@@ -37,6 +37,7 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+
     public Usuario(UsuarioCadastroDTO dto) {
         this.nome = dto.nome();
         this.email = dto.email();
@@ -50,6 +51,12 @@ public class Usuario implements UserDetails {
         if (dto.email() != null) {
             this.email = dto.email();
         }
+    }
+    public Usuario(String nome, String email, String senha, UserRole role) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
