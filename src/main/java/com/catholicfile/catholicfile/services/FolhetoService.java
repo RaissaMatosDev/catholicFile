@@ -9,7 +9,7 @@ import com.catholicfile.catholicfile.infra.RecursoNaoEncontradoException;
 import com.catholicfile.catholicfile.repositories.FolhetoRepository;
 import com.catholicfile.catholicfile.repositories.SecaoRepository;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import org.springframework.transaction.annotation.Transactional; // Correto
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -39,20 +39,20 @@ public class FolhetoService {
         this.secaoRepository = secaoRepository;
     }
 
-    private void validarIds(List<SecaoFolhetoDTO> ids) throws RecursoNaoEncontradoException {
 
+    private void validarIds(List<Long> ids) throws RecursoNaoEncontradoException {
         if (ids == null || ids.isEmpty()) {
             throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "O folheto precisa ter seções.");
         }
 
-        Set<SecaoFolhetoDTO> unicos = new HashSet<>(ids);
+        Set<Long> unicos = new HashSet<>(ids);
 
         if (unicos.size() != ids.size()) {
-            throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Não pode repetir seção.");
+            throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "Não pode repetir seção.");
         }
     }
-    private void validarTipos(List<SecaoFolheto> secoes) throws RecursoNaoEncontradoException {
 
+    private void validarTipos(List<SecaoFolheto> secoes) throws RecursoNaoEncontradoException {
         Set<TipoSecao> tipos = secoes.stream()
                 .map(SecaoFolheto::getTipo)
                 .collect(Collectors.toSet());
@@ -65,13 +65,14 @@ public class FolhetoService {
     @Transactional
     public FolhetoDTO cadastrarFolheto(FolhetoDTO dto) {
 
-        validarIds(dto.secoesIds());
-
-        List<Long> ids = dto.secoesIds()
-                .stream()
+        List<Long> ids = dto.secoesIds().stream()
                 .map(SecaoFolhetoDTO::id)
                 .toList();
 
+
+        validarIds(ids);
+
+        //Busca as entidades no banco
         List<SecaoFolheto> secoes = secaoRepository.findAllById(ids);
 
         if (secoes.size() != ids.size()) {
@@ -80,6 +81,7 @@ public class FolhetoService {
 
         validarTipos(secoes);
 
+        //Mapeamento para a Entidade
         Folheto folheto = new Folheto();
         folheto.setTitulo(dto.titulo());
         folheto.setLit(dto.lit());
@@ -88,7 +90,7 @@ public class FolhetoService {
 
         Folheto salvo = folhetoRepository.save(folheto);
 
-        return new FolhetoDTO(salvo);
+        return toDTO(salvo);
     }
 
     @Transactional
@@ -98,9 +100,9 @@ public class FolhetoService {
         }
         folhetoRepository.deleteById(id);
     }
+
     @Transactional(readOnly = true)
     public byte[] gerarPdf(Long folhetoId) throws Exception {
-
         Folheto folheto = folhetoRepository.findById(folhetoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Folheto não encontrado"));
 
@@ -109,16 +111,11 @@ public class FolhetoService {
                 .sorted(Comparator.comparing(s -> s.getTipo().ordinal()))
                 .toList();
 
-
         Context context = new Context();
         context.setVariable("folheto", folheto);
-
-
         context.setVariable("secoes", secoesOrdenadas);
 
-        // Processa o template Thymeleaf
         String htmlFinal = templateEngine.process("folheto", context);
-
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfRendererBuilder builder = new PdfRendererBuilder();
@@ -128,28 +125,21 @@ public class FolhetoService {
 
         return outputStream.toByteArray();
     }
+
     public Page<FolhetoDTO> listar(Pageable pageable) {
         return folhetoRepository.findAll(pageable)
-                .map(folheto -> new FolhetoDTO(
-                        folheto.getId(),
-                        folheto.getTitulo(),
-                        folheto.getLit(),
-                        folheto.getSecoes().stream()
-                                .map(SecaoFolhetoDTO::new)
-                                .toList()
-                ));
+                .map(this::toDTO);
     }
-    /**
-     * Busca todas as seções de um folheto, ordenadas pelo TipoSecao
-     */
+
     public List<SecaoFolhetoDTO> buscarSecoesPorFolheto(Long folhetoId) {
         List<SecaoFolheto> secoes = secaoRepository.findByFolhetos_Id(folhetoId);
         secoes.sort(Comparator.comparing(s -> s.getTipo().ordinal()));
 
         return secoes.stream()
-                .map(SecaoFolhetoDTO::new)
+                .map(this::mapSecao)
                 .toList();
     }
+
     private SecaoFolhetoDTO mapSecao(SecaoFolheto secao) {
         return new SecaoFolhetoDTO(
                 secao.getId(),
@@ -171,6 +161,7 @@ public class FolhetoService {
                         .toList()
         );
     }
+
     public FolhetoDTO buscarPorId(Long id) {
         Folheto folheto = folhetoRepository.buscarComSecoes(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND,"Folheto não encontrado"));
