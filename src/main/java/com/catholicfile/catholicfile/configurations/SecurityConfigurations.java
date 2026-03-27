@@ -60,7 +60,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers("/usuarios/login", "/usuarios").permitAll()
+                        .requestMatchers("/usuarios/login", "/usuarios","/usuarios/usuarios" ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/folheto/*/pdf").permitAll()
 
 
