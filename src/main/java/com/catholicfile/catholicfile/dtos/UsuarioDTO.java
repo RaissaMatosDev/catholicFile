@@ -6,7 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Retorno das informações pós cadastro do e listagem usuário")
 public record UsuarioDTO(
-        @Schema(description = "O id permanece o mesmo")
+
+
         Long id,
 
         @Schema(description = "Nome do Usuario", example = "Beatriz Matos")

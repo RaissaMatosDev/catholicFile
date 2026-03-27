@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Informações de cadastro de usuário")
 public record UsuarioCadastroDTO(
 
-                        @Schema(description = "O id é dinamico não podendo ser modificado")
+
                          Long id,
 
                         @Schema(description = "O nome completo do usuário")
