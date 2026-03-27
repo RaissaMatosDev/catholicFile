@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -42,7 +41,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dados) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO dados) {
         String token = usuarioService.autenticar(dados.email(), dados.senha());
         return ResponseEntity.ok(new LoginResponseDTO(token, "Bearer"));
     }
@@ -67,7 +66,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class))),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
-    @PutMapping("/meu-perfil")
+    @PutMapping("/me")
     public ResponseEntity<UsuarioDTO> atualizarMeuPerfil(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody @Valid UsuarioAttDTO dto) {
@@ -82,7 +81,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
             @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
-    @GetMapping("/listar")
+    @GetMapping
     public ResponseEntity<Page<UsuarioDTO>> listar(
             @org.springdoc.core.annotations.ParameterObject
             @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
