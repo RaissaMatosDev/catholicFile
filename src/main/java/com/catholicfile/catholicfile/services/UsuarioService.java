@@ -51,9 +51,6 @@ private final UsuarioRepository repository;
         var usuario = repository.findByEmail(emailLogado)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não encontrado"));
 
-        if (userDetails == null) {
-            throw new RuntimeException("Usuário não autenticado");
-        }
         // valida senha atual
         if (dto.senhaAtual() != null) {
             if (!passwordEncoder.matches(dto.senhaAtual(), usuario.getSenha())) {
