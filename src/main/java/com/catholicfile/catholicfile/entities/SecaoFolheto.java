@@ -13,8 +13,8 @@ import java.util.List;
 
 
 //Esta entidade é registrada no banco na tabela secao folhetos,
-// e utiliza relacionamento ManytoOne em relação a folheto
-// (um folheto contem varias secoes folheto).
+// e utiliza relacionamento ManytoMany em relação a folheto
+// (um folheto contem varias secoes folheto e uma secao pode estar em diversos folhetos).
 
 @Entity
 @Table(name = "secao_folheto",

@@ -36,27 +36,31 @@ private final UsuarioRepository repository;
     @Transactional
     public UsuarioDTO cadastrar(@Valid UsuarioCadastroDTO dto, UserDetails criador) {
         Usuario usuario = new Usuario();
-
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
 
-        // define a role
         if (dto.role() == UserRole.ADMINISTRADOR) {
-            // valida se quem cria é admin
+            // precisa de criador logado
+            if (criador == null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Somente administradores logados podem criar outro administrador");
+            }
+
             boolean criadorEhAdmin = criador.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+
             if (!criadorEhAdmin) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                         "Somente administradores podem criar outro administrador");
             }
+
             usuario.setRole(UserRole.ADMINISTRADOR);
         } else {
             usuario.setRole(UserRole.USUARIO);
         }
 
         repository.save(usuario);
-
         return new UsuarioDTO(usuario);
     }
     @Transactional
