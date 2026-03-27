@@ -30,24 +30,26 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("=== JWT DEBUG ===");
-        System.out.println("PATH: " + request.getRequestURI());
-        System.out.println("AUTH HEADER: " + request.getHeader("Authorization"));
 
         String path = request.getRequestURI();
+        System.out.println("=== JWT DEBUG ===");
+        System.out.println("PATH: " + path);
 
-
+        // Rotas públicas
         if (path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui") ||
                 path.equals("/usuarios/login") ||
                 path.contains("/pdf") ||
                 path.startsWith("/error")) {
-
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authHeader = request.getHeader("Authorization");
+        // Pega o token do header ou do proxy
+        String authHeader = Optional.ofNullable(request.getHeader("Authorization"))
+                .or(() -> Optional.ofNullable(request.getHeader("X-Forwarded-Authorization")))
+                .orElse(null);
+        System.out.println("AUTH HEADER: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -58,9 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             if (jwtUtil.validarToken(token)) {
-
                 String email = jwtUtil.extrairEmail(token);
-
                 Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
                 if (usuarioOpt.isPresent()) {
@@ -74,7 +74,6 @@ public class JwtFilter extends OncePerRequestFilter {
                             );
 
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
