@@ -13,9 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-
 @Service
 public class SecaoService {
 
@@ -80,10 +77,21 @@ public class SecaoService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException(
                         HttpStatus.NOT_FOUND, "Seção não encontrada"));
 
-        secao.setTipo(dto.tipo());
-        secao.setConteudo(dto.conteudo());
-        secao.setLit(dto.lit());
-        secao.setTitulo(dto.titulo());
+        if (dto.titulo() != null) {
+            secao.setTitulo(dto.titulo());
+        }
+
+        if (dto.conteudo() != null) {
+            secao.setConteudo(dto.conteudo());
+        }
+
+        if (dto.tipo() != null) {
+            secao.setTipo(dto.tipo());
+        }
+
+        if (dto.lit() != null) {
+            secao.setLit(dto.lit());
+        }
 
         return repository.save(secao);
     }

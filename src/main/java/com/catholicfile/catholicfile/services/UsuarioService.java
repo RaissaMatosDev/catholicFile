@@ -76,7 +76,7 @@ private final UsuarioRepository repository;
             }
         }
 
-        // atualiza dados
+        // atualiza dados apenas se o usuario settar, para evitar null
         if (dto.nome() != null) usuario.setNome(dto.nome());
         if (dto.email() != null) usuario.setEmail(dto.email());
 
