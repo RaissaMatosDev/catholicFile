@@ -52,8 +52,11 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErroDTO.class)))
     })
     @PostMapping
-    public ResponseEntity<UsuarioDTO> cadastrar(@RequestBody @Valid UsuarioCadastroDTO dados) {
-        var usuarioSalvo = usuarioService.cadastrar(dados);
+    public ResponseEntity<UsuarioDTO> cadastrar(
+            @RequestBody @Valid UsuarioCadastroDTO dados,
+            @AuthenticationPrincipal UserDetails criador) {
+
+        var usuarioSalvo = usuarioService.cadastrar(dados, criador);
         return ResponseEntity
                 .created(URI.create("/usuarios/" + usuarioSalvo.id()))
                 .body(usuarioSalvo);

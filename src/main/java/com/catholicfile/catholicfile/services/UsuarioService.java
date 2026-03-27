@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,13 +34,26 @@ private final UsuarioRepository repository;
         this.passwordEncoder = passwordEncoder;
     }
     @Transactional
-    public UsuarioDTO cadastrar(@Valid UsuarioCadastroDTO dto) {
+    public UsuarioDTO cadastrar(@Valid UsuarioCadastroDTO dto, UserDetails criador) {
         Usuario usuario = new Usuario();
 
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
-        usuario.setRole(UserRole.USUARIO); // garante segurança
+
+        // define a role
+        if (dto.role() == UserRole.ADMINISTRADOR) {
+            // valida se quem cria é admin
+            boolean criadorEhAdmin = criador.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+            if (!criadorEhAdmin) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Somente administradores podem criar outro administrador");
+            }
+            usuario.setRole(UserRole.ADMINISTRADOR);
+        } else {
+            usuario.setRole(UserRole.USUARIO);
+        }
 
         repository.save(usuario);
 
