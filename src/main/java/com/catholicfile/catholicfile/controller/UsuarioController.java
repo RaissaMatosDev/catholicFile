@@ -28,7 +28,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/usuarios")
-@Tag(name = "Usuário", description = "Endpoints para gerenciamento de usuários e autenticação")
+@Tag(name = "Usuario", description = "Endpoints para gerenciamento de usuários e autenticação")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -91,7 +91,7 @@ public class UsuarioController {
         return ResponseEntity.ok(new LoginResponseDTO(token, "Bearer"));
     }
 
-    @SecurityRequirement(name = SecurityConfigurations.SECURITY)
+
     @Operation(summary = "Cadastra um novo usuário")
     @ApiResponses(value = {
             @ApiResponse(

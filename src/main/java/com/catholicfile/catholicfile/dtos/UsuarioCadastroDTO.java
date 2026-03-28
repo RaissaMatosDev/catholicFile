@@ -11,22 +11,21 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Informações de cadastro de usuário")
 public record UsuarioCadastroDTO(
 
-
                          Long id,
 
-                        @Schema(description = "O nome completo do usuário")
+                         @Schema(description = "O nome completo do usuário")
                          @NotBlank
                          String nome,
 
-                        @Schema(description = "Email do usuário")
+                         @Schema(description = "Email do usuário")
                          @NotNull @Email
                          String email,
 
-                        @Schema(description = "Senha do usuario(será armazenada em hash")
+                         @Schema(description = "Senha do usuario(será armazenada em hash")
                          @NotBlank
                          String senha,
 
-                        @Schema(description = "Apenas um ADMINISTRADOR pode criar um usuário ADMINISTRADOR,em caso de tentativa sem autenticação o programa troca para usuario comum mesmo digitando ADIMINISTRADOR")
+                         @Schema(description = "Apenas um ADMINISTRADOR pode criar um usuário ADMINISTRADOR,em caso de tentativa sem autenticação o programa troca para usuario comum mesmo digitando ADIMINISTRADOR")
                          UserRole role
 
                          ) {

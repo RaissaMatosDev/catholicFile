@@ -41,20 +41,7 @@ private final UsuarioRepository repository;
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
 
         if (dto.role() == UserRole.ADMINISTRADOR) {
-            // precisa de criador logado
-            if (criador == null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Somente administradores logados podem criar outro administrador");
-            }
-
-            boolean criadorEhAdmin = criador.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-
-            if (!criadorEhAdmin) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Somente administradores podem criar outro administrador");
-            }
-
+            validarPermissaoCriadorAdmin(criador);
             usuario.setRole(UserRole.ADMINISTRADOR);
         } else {
             usuario.setRole(UserRole.USUARIO);
@@ -62,6 +49,19 @@ private final UsuarioRepository repository;
 
         repository.save(usuario);
         return new UsuarioDTO(usuario);
+    }
+
+    private void validarPermissaoCriadorAdmin(UserDetails criador) {
+        if (criador == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Login necessário.");
+        }
+
+        boolean isAdmin = criador.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + UserRole.ADMINISTRADOR.name()));
+
+        if (!isAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: Requer privilégios de administrador.");
+        }
     }
     @Transactional
     public UsuarioDTO atualizarMeuPerfil(UsuarioAttDTO dto, String emailLogado) {
