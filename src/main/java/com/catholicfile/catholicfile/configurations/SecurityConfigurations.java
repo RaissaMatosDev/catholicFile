@@ -62,10 +62,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/usuarios").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .requestMatchers("/usuarios/login").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/folheto/*/pdf").permitAll()
+
 
                         .anyRequest().authenticated()
                 )
