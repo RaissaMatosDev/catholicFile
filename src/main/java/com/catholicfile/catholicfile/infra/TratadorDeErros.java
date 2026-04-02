@@ -117,4 +117,16 @@ public class TratadorDeErros {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroDTO> tratarErroGenerico(Exception ex, HttpServletRequest request) {
+        ex.printStackTrace();
+        ErroDTO erro = new ErroDTO(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "INTERNAL_SERVER_ERROR",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+    }
     }
