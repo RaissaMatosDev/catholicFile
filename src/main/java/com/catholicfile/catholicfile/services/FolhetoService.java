@@ -115,7 +115,7 @@ public class FolhetoService {
         context.setVariable("folheto", folheto);
         context.setVariable("secoes", secoesOrdenadas);
 
-        String htmlFinal = templateEngine.process("folheto", context);
+        String htmlFinal = templateEngine.process("Folheto", context);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfRendererBuilder builder = new PdfRendererBuilder();
