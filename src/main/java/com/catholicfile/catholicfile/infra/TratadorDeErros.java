@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
 
@@ -101,5 +102,19 @@ public class TratadorDeErros {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErroDTO> tratarRotaNaoEncontrada(
+            NoHandlerFoundException ex,
+            HttpServletRequest request) {
 
+        ErroDTO erro = new ErroDTO(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "NOT_FOUND",
+                "Rota não encontrada: " + ex.getRequestURL(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+    }
     }
