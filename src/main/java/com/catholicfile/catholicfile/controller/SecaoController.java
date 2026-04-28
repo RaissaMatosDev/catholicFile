@@ -177,9 +177,10 @@ public class SecaoController {
             )
     })
     @PostMapping
-    public ResponseEntity<SecaoFolheto> criar(@RequestBody SecaoFolhetoDTO dto) {
+    public ResponseEntity<SecaoFolhetoDTO> criar(@RequestBody SecaoFolhetoDTO dto) {
         SecaoFolheto novaSecao = secaoService.criar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaSecao);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SecaoFolhetoDTO(novaSecao));
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
