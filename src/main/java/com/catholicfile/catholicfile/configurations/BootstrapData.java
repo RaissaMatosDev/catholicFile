@@ -13,10 +13,10 @@ public class BootstrapData {
     @Configuration
     public class DataInitializer {
 
-        @Value("${app.admin.email}")
+        @Value("${ADMIN_EMAIL}")
         private String adminEmail;
 
-        @Value("${app.admin.senha}")
+        @Value("${ADMIN_PASSWORD}")
         private String adminSenha;
 
         @Bean

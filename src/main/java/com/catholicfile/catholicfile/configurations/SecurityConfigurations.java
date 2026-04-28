@@ -1,15 +1,10 @@
 package com.catholicfile.catholicfile.configurations;
 
 
-import com.catholicfile.catholicfile.entities.Usuario;
 import com.catholicfile.catholicfile.infra.CustomAuthenticationEntryPoint;
-import com.catholicfile.catholicfile.repositories.UsuarioRepository;
 import com.catholicfile.catholicfile.services.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
