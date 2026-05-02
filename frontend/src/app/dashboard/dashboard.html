@@ -1,0 +1,135 @@
+<div class="dashboard-page">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect x="12" y="2" width="4" height="24" rx="2" fill="white"/>
+          <rect x="4" y="8" width="20" height="4" rx="2" fill="white"/>
+        </svg>
+      </div>
+      <span class="brand-name"><strong>Catholic</strong>File</span>
+    </div>
+
+    <div class="navbar-user">
+      <span class="user-greeting">Olá, {{ nomeUsuario }}</span>
+      <span class="user-badge" [class.badge-admin]="isAdmin">
+        {{ isAdmin ? 'Administrador' : 'Usuário' }}
+      </span>
+      <button class="btn-logout" (click)="logout()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Conteúdo -->
+  <main class="dashboard-main">
+
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-sub">Bem-vindo ao CatholicFile</p>
+    </div>
+
+    <!-- Cards de navegação -->
+    <section class="section-label">Navegação</section>
+    <div class="cards-grid">
+
+      <button class="card" routerLink="/folhetos">
+        <div class="card-icon card-icon--blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M14 2v6h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="card-title">Folhetos</span>
+          <span class="card-desc">Listar todos os folhetos</span>
+        </div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <button class="card" routerLink="/canticos">
+        <div class="card-icon card-icon--gold">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="card-title">Cânticos</span>
+          <span class="card-desc">Listar todos os cânticos</span>
+        </div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <button class="card" routerLink="/recentes">
+        <div class="card-icon card-icon--green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="card-title">Recentes</span>
+          <span class="card-desc">Acessados recentemente</span>
+        </div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+    </div>
+
+    <!-- Ações admin -->
+    <ng-container *ngIf="isAdmin">
+      <section class="section-label">Ações administrativas</section>
+      <div class="cards-grid">
+
+        <button class="card card--action" routerLink="/gerar-secao">
+          <div class="card-icon card-icon--purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M17 13v8M13 17h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <span class="card-title">Gerar Seção</span>
+            <span class="card-desc">Criar uma nova seção</span>
+          </div>
+          <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <button class="card card--action" routerLink="/gerar-folheto">
+          <div class="card-icon card-icon--purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M14 2v6h6M12 18v-6M9 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <span class="card-title">Gerar Folheto</span>
+            <span class="card-desc">Criar um novo folheto</span>
+          </div>
+          <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+      </div>
+    </ng-container>
+
+  </main>
+</div>

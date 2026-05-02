@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+$purple-deep:   #2D1760;
+$purple-mid:    #5B2D9E;
+$purple-bright: #7C4DBC;
+$gold:          #C9A84C;
+$white:         #FFFFFF;
+
+:host { display: block; width: 100%; min-height: 100vh; }
+
+.dashboard-page {
+  min-height: 100vh;
+  background: #3D2280;  // ← mais claro que o $purple-deep (#2D1760)
+  font-family: 'Lato', sans-serif;
+}
+
+// ── Navbar ─────────────────────────────────────────────
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 64px;
+  background: rgba($white, .04);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba($white, .08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, $purple-bright, $purple-mid);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.brand-name {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: $white;
+  strong { color: $gold; }
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-greeting {
+  font-size: 14px;
+  color: rgba($white, .6);
+}
+
+.user-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba($white, .1);
+  color: rgba($white, .5);
+
+  &.badge-admin {
+    background: rgba($gold, .15);
+    color: $gold;
+    border: 1px solid rgba($gold, .3);
+  }
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba($white, .06);
+  border: 1px solid rgba($white, .1);
+  border-radius: 10px;
+  color: rgba($white, .5);
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .2s;
+
+  &:hover {
+    background: rgba($white, .1);
+    color: $white;
+  }
+}
+
+// ── Main ───────────────────────────────────────────────
+.dashboard-main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.page-header {
+  margin-bottom: 2.5rem;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: $white;
+  margin: 0 0 4px;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: rgba($white, .45);
+  margin: 0;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba($white, .35);
+  margin-bottom: 1rem;
+}
+
+// ── Cards ──────────────────────────────────────────────
+.cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  background: rgba($white, .05);
+  border: 1px solid rgba($white, .09);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s;
+  text-align: left;
+
+  &:hover {
+    background: rgba($white, .09);
+    border-color: rgba($white, .16);
+    transform: translateX(4px);
+  }
+
+  &--action {
+    border-color: rgba($purple-bright, .25);
+    background: rgba($purple-bright, .07);
+
+    &:hover {
+      background: rgba($purple-bright, .14);
+      border-color: rgba($purple-bright, .4);
+    }
+  }
+}
+
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+
+  &--blue   { background: rgba(#4FC3F7, .15); color: #4FC3F7; }
+  &--gold   { background: rgba($gold, .15);   color: $gold;   }
+  &--green  { background: rgba(#66BB6A, .15); color: #66BB6A; }
+  &--purple { background: rgba($purple-bright, .2); color: #CE93D8; }
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: $white;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: rgba($white, .45);
+}
+
+.card-arrow {
+  color: rgba($white, .25);
+  flex-shrink: 0;
+}

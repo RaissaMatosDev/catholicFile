@@ -1,0 +1,277 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}
+
+// ── Variáveis CatholicFile ──────────────────────────────
+$purple-deep:   #2D1760;
+$purple-mid:    #5B2D9E;
+$purple-bright: #7C4DBC;
+$purple-light:  #9D6FD4;
+$purple-pale:   #EDE7F6;
+$purple-faint:  #F5F0FB;
+$gold:          #C9A84C;
+$white:         #FFFFFF;
+$error:         #C0392B;
+
+// ── Page ───────────────────────────────────────────────
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $purple-deep;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Lato', sans-serif;
+  padding: 2rem 1rem;
+}
+
+// Orbs decorativos
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  &-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba($purple-bright, .35) 0%, transparent 70%);
+    top: -150px; right: -150px;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  &-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba($gold, .12) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    animation: pulse 8s ease-in-out infinite reverse;
+  }
+}
+
+// Cruz decorativa de fundo
+.cross-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba($white, .025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba($white, .025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.12); opacity: .8; }
+}
+
+// ── Card ───────────────────────────────────────────────
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: rgba($white, .06);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba($white, .12);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 32px 80px rgba(0,0,0,.4);
+  animation: slideUp .5s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Brand ──────────────────────────────────────────────
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.brand-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, $purple-bright, $purple-mid);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba($purple-bright, .4);
+}
+
+.brand-name {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: $white;
+  letter-spacing: .5px;
+  strong { color: $gold; }
+}
+
+// ── Títulos ────────────────────────────────────────────
+.auth-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: $white;
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: rgba($white, .55);
+  text-align: center;
+  margin: 0 0 1.8rem;
+  font-weight: 300;
+}
+
+// ── Alerta de erro ─────────────────────────────────────
+.alert-erro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba($error, .15);
+  border: 1px solid rgba($error, .4);
+  border-radius: 10px;
+  color: #FF8A80;
+  font-size: 13px;
+  padding: 10px 14px;
+  margin-bottom: 1.2rem;
+  animation: fadeIn .3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Fields ─────────────────────────────────────────────
+.field {
+  margin-bottom: 1.2rem;
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: rgba($white, .6);
+    margin-bottom: 6px;
+  }
+
+  &--error {
+    .input-wrap input { border-color: rgba($error, .6); }
+    .input-icon, .toggle-senha { color: rgba($error, .7); }
+  }
+}
+
+.input-wrap {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: rgba($white, .35);
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 48px;
+    background: rgba($white, .07);
+    border: 1px solid rgba($white, .12);
+    border-radius: 12px;
+    padding: 0 44px;
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    color: $white;
+    outline: none;
+    transition: border-color .2s, background .2s;
+    box-sizing: border-box;
+
+    &::placeholder { color: rgba($white, .25); }
+
+    &:focus {
+      border-color: $purple-bright;
+      background: rgba($white, .1);
+    }
+  }
+}
+
+.toggle-senha {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba($white, .35);
+  padding: 0;
+  display: flex;
+  transition: color .2s;
+  &:hover { color: rgba($white, .7); }
+}
+
+.field-msg {
+  display: block;
+  font-size: 12px;
+  color: #FF8A80;
+  margin-top: 5px;
+  padding-left: 4px;
+}
+
+// ── Botão primário ─────────────────────────────────────
+.btn-primary {
+  width: 100%;
+  height: 50px;
+  margin-top: .4rem;
+  background: linear-gradient(135deg, $purple-bright 0%, $purple-mid 100%);
+  border: none;
+  border-radius: 12px;
+  color: $white;
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 6px 24px rgba($purple-bright, .45);
+  display: flex; align-items: center; justify-content: center;
+
+  &:hover:not(:disabled) {
+    opacity: .92;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 32px rgba($purple-bright, .55);
+  }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
+}
+
+.spin {
+  animation: rotate .8s linear infinite;
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Rodapé ─────────────────────────────────────────────
+.auth-footer {
+  text-align: center;
+  font-size: 14px;
+  color: rgba($white, .45);
+  margin: 1.4rem 0 0;
+
+  a {
+    color: $gold;
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity .2s;
+    &:hover { opacity: .8; text-decoration: underline; }
+  }
+}
