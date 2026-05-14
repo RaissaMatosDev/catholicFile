@@ -24,75 +24,68 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
-    @EnableWebSecurity
-    @EnableMethodSecurity
-    @SecurityScheme(name = SecurityConfigurations.SECURITY, type = SecuritySchemeType.HTTP,bearerFormat = "JWT", scheme = "bearer")
+@EnableWebSecurity
+@EnableMethodSecurity
+@SecurityScheme(name = SecurityConfigurations.SECURITY, type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
+public class SecurityConfigurations {
 
-    public class SecurityConfigurations {
-        private final JwtFilter jwtFilter;
+  private final JwtFilter jwtFilter;
+  public static final String SECURITY = "bearerAuth";
 
-        public static final String SECURITY = "bearerAuth";
+  public SecurityConfigurations(JwtFilter jwtFilter) {
+    this.jwtFilter = jwtFilter;
+  }
 
-        public SecurityConfigurations(JwtFilter jwtFilter) {
-            this.jwtFilter = jwtFilter;
-        }
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http, CustomUserDetailsService userDetailsService) throws Exception {
+    AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    authBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    return authBuilder.build();
+  }
 
-        @Bean
-        public AuthenticationManager authenticationManager(HttpSecurity http, CustomUserDetailsService userDetailsService) throws Exception {
-            AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-            authBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-            return authBuilder.build();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+      .cors(Customizer.withDefaults())
+      .csrf(csrf -> csrf.disable())
+      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .requestMatchers("/error").permitAll()
+        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+        .requestMatchers(HttpMethod.POST, "/usuarios/usuarios").permitAll()
+        .anyRequest().authenticated()
+      )
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+      )
+      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+      .build();
+  }
 
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/usuarios").permitAll()
-
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
-
-    //Configuração do Cors para evitar bloqueios
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-      return new WebMvcConfigurer() {
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-          registry.addMapping("/**")
-            .allowedOrigins(
-              "http://localhost:4200",
-              "https://catholic-file.vercel.app"
-            )
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .exposedHeaders("Authorization")
-            .allowCredentials(true);
-        }
-      };
-    }
-
-        }
-
-
-
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+          .allowedOrigins(
+            "http://localhost:4200",
+            "https://catholic-file.vercel.app"
+          )
+          .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+          .allowedHeaders("*")
+          .exposedHeaders("Authorization")
+          .allowCredentials(true);
+      }
+    };
+  }
+}
 
