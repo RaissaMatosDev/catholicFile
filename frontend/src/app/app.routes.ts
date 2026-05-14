@@ -20,7 +20,11 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard)
   },
   {
+    path: 'folhetos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./folhetos/folhetos').then(m => m.Folhetos)
+  },
+  {
     path: '**',
     redirectTo: 'dashboard'
-  }
-];
+  }];

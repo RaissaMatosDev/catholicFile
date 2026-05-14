@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+$purple-deep:   #2D1760;
+$purple-mid:    #5B2D9E;
+$purple-bright: #7C4DBC;
+$gold:          #C9A84C;
+$white:         #FFFFFF;
+$error:         #C0392B;
+
+:host { display: block; width: 100%; min-height: 100vh; }
+
+.page {
+  min-height: 100vh;
+  background: #3D2280;
+  font-family: 'Lato', sans-serif;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 64px;
+  background: rgba($white, .04);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba($white, .08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand { display: flex; align-items: center; gap: 10px; }
+
+.brand-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, $purple-bright, $purple-mid);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.brand-name {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: $white;
+  strong { color: $gold; }
+}
+
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba($white, .06);
+  border: 1px solid rgba($white, .1);
+  border-radius: 10px;
+  color: rgba($white, .6);
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .2s;
+  &:hover { background: rgba($white, .1); color: $white; }
+}
+
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: $white;
+  margin: 0 0 4px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: rgba($white, .45);
+  margin: 0;
+}
+
+.alert-erro {
+  background: rgba($error, .15);
+  border: 1px solid rgba($error, .4);
+  border-radius: 10px;
+  color: #FF8A80;
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.spin { animation: rotate .8s linear infinite; }
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.folheto-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba($white, .05);
+  border: 1px solid rgba($white, .09);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: background .2s, border-color .2s;
+
+  &:hover {
+    background: rgba($white, .08);
+    border-color: rgba($white, .15);
+  }
+}
+
+.folheto-icon {
+  width: 42px; height: 42px;
+  background: rgba(#4FC3F7, .15);
+  color: #4FC3F7;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.folheto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.folheto-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: $white;
+}
+
+.folheto-lit {
+  font-size: 12px;
+  color: $gold;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.folheto-acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba($white, .1);
+  background: rgba($white, .05);
+  color: rgba($white, .5);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+
+  &:hover { background: rgba($white, .12); color: $white; }
+
+  &.btn-excluir:hover {
+    background: rgba($error, .2);
+    border-color: rgba($error, .4);
+    color: #FF8A80;
+  }
+}
+
+.vazio {
+  text-align: center;
+  padding: 4rem 0;
+  color: rgba($white, .35);
+  font-size: 15px;
+}
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-pag {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba($white, .1);
+  background: rgba($white, .05);
+  color: rgba($white, .6);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+
+  &:hover:not(:disabled) { background: rgba($white, .1); color: $white; }
+  &:disabled { opacity: .3; cursor: not-allowed; }
+}
+
+.pag-info {
+  font-size: 14px;
+  color: rgba($white, .5);
+}

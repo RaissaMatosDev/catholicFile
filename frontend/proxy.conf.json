@@ -1,7 +1,18 @@
 {
   "/usuarios": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "changeOrigin": true
+    "target": "https://catholicfile.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "headers": {
+      "Connection": "keep-alive"
+    }
+  },
+  "/folheto": {
+    "target": "https://catholicfile.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "headers": {
+      "Connection": "keep-alive"
+    }
   }
 }
