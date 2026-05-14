@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FolhetoService, FolhetoDTO } from '../services/folheto.service';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-folhetos',
@@ -45,11 +46,23 @@ export class Folhetos implements OnInit {
         this.carregando = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.erro = 'Erro ao carregar folhetos.';
         this.carregando = false;
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  abrirPdf(id: number): void {
+    const token = this.authService.getToken();
+    fetch(`${environment.apiUrl}/folheto/${id}/pdf`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
     });
   }
 
@@ -78,16 +91,4 @@ export class Folhetos implements OnInit {
   voltar(): void {
     this.router.navigate(['/dashboard']);
   }
-
-  abrirPdf(id: number): void {
-  const token = this.authService.getToken();
-  fetch(`/folheto/${id}/pdf`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  .then(res => res.blob())
-  .then(blob => {
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-  });
-}
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface LoginRequestDTO {
   email: string;
@@ -28,7 +29,7 @@ export interface UsuarioDTO {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private apiUrl = '/usuarios';
+  private apiUrl = `${environment.apiUrl}/usuarios`;
 
   constructor(
     private http: HttpClient,
@@ -42,7 +43,7 @@ export class AuthService {
   }
 
   cadastrar(dados: UsuarioCadastroDTO): Observable<UsuarioDTO> {
-    return this.http.post<UsuarioDTO>(`${this.apiUrl}/usuarios`, dados); // ✅ POST /usuarios/usuarios
+    return this.http.post<UsuarioDTO>(`${this.apiUrl}/usuarios`, dados);
   }
 
   salvarToken(token: string): void {
@@ -61,6 +62,7 @@ export class AuthService {
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
+
   getPayload(): any {
     const token = this.getToken();
     if (!token) return null;
@@ -68,7 +70,7 @@ export class AuthService {
       const base64 = token.split('.')[1];
       return JSON.parse(atob(base64));
     } catch {
-    return null;
+      return null;
     }
   }
 }

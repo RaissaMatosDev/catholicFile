@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface FolhetoDTO {
   id?: number;
@@ -19,7 +20,7 @@ export interface PageResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class FolhetoService {
 
-  private apiUrl = '/folheto';
+  private apiUrl = `${environment.apiUrl}/folheto`;
 
   constructor(private http: HttpClient) {}
 
